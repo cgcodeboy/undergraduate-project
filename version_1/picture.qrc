@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/catalog">
+        <file>picture/drop.png</file>
+        <file>picture/drift.png</file>
+    </qresource>
+</RCC>
