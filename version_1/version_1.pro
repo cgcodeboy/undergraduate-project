@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -14,10 +14,18 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    sim_catalog.cpp
+    sim_catalog.cpp \
+    skydome.cpp \
+    spheresegment.cpp \
+    viewwidget.cpp
 
 HEADERS  += mainwindow.h \
-    sim_catalog.h
+    sim_catalog.h \
+    cameracallback.h \
+    skyDome.h \
+    SphereSegment.h \
+    viewwidget.h \
+    airplanecallback.h
 
 FORMS    += mainwindow.ui \
     sim_catalog.ui
@@ -32,4 +40,7 @@ CONFIG(debug, debug|release) {
 } else {
     LIBS+=-LD:\osg\OpenSceneGraph-3.2.1-rc3\lib -lOpenThreads -losg -losgDB -losgUtil -losgGA -losgViewer -losgText -losgOcean -losgQt
 }
+
+DISTFILES += \
+    version_1.pro.user
 

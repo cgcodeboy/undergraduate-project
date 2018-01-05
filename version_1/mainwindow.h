@@ -6,6 +6,7 @@
  */
 #include <QMainWindow>
 #include <QDebug>
+#include <QTreeWidget>
 
 /*
  * 引用头文件
@@ -31,6 +32,7 @@ private:
 private slots:
     void dropClickSlot();
     void driftClickSlot();
+    void on_subject_TW_itemClicked(QTreeWidgetItem *item, int column);
 };
 
 #endif // MAINWINDOW_H

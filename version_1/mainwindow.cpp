@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
     simCatalog->show();
     connect(simCatalog,SIGNAL(dropClick()),this,SLOT(dropClickSlot()));
     connect(simCatalog,SIGNAL(driftClick()),this,SLOT(driftClickSlot()));
+
 }
 
 MainWindow::~MainWindow()
@@ -23,7 +24,7 @@ MainWindow::~MainWindow()
  */
 void MainWindow::dropClickSlot()
 {
-    qDebug()<<"hello";
+    ui->main_StackWidght->setCurrentIndex(0);
 }
 
 /*
@@ -31,5 +32,12 @@ void MainWindow::dropClickSlot()
  */
 void MainWindow::driftClickSlot()
 {
-    qDebug()<<"world";
+    ui->main_StackWidght->setCurrentIndex(1);
+}
+
+void MainWindow::on_subject_TW_itemClicked(QTreeWidgetItem *item, int column)
+{
+    if(item->text(column) == "海浪高度"){
+
+    }
 }

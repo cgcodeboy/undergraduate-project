@@ -88,6 +88,8 @@ void ViewWidget::initScene()
     root = new osg::Group;
 
     osg::ref_ptr<osgOcean::FFTOceanSurface> surface = new osgOcean::FFTOceanSurface(64,256,17,osg::Vec2(1.1f,1.1f),12,10,0.8,1e-8,true,2.5,20.0,256);
+    surface->enableEndlessOcean(true);
+    surface->setIsChoppy(true);
     osg::ref_ptr<osgOcean::OceanScene> scene = new osgOcean::OceanScene(surface.get());
 
     osg::ref_ptr<osg::TextureCubeMap> cubeMap = new osg::TextureCubeMap;
@@ -96,12 +98,12 @@ void ViewWidget::initScene()
     cubeMap->setFilter(osg::Texture::MAG_FILTER,osg::Texture::LINEAR);
     cubeMap->setWrap(osg::Texture::WRAP_S,osg::Texture::CLAMP_TO_EDGE);
     cubeMap->setWrap(osg::Texture::WRAP_T,osg::Texture::CLAMP_TO_EDGE);
-    cubeMap->setImage(osg::TextureCubeMap::NEGATIVE_X,osgDB::readImageFile("resources/textures/sky_dusk/west.png"));
-    cubeMap->setImage(osg::TextureCubeMap::POSITIVE_X,osgDB::readImageFile("resources/textures/sky_dusk/east.png"));
-    cubeMap->setImage(osg::TextureCubeMap::NEGATIVE_Y,osgDB::readImageFile("resources/textures/sky_dusk/up.png"));
-    cubeMap->setImage(osg::TextureCubeMap::POSITIVE_Y,osgDB::readImageFile("resources/textures/sky_dusk/down.png"));
-    cubeMap->setImage(osg::TextureCubeMap::NEGATIVE_Z,osgDB::readImageFile("resources/textures/sky_dusk/south.png"));
-    cubeMap->setImage(osg::TextureCubeMap::POSITIVE_Z,osgDB::readImageFile("resources/textures/sky_dusk/north.png"));
+    cubeMap->setImage(osg::TextureCubeMap::NEGATIVE_X,osgDB::readImageFile("resources/textures/sky_clear/west.png"));
+    cubeMap->setImage(osg::TextureCubeMap::POSITIVE_X,osgDB::readImageFile("resources/textures/sky_clear/east.png"));
+    cubeMap->setImage(osg::TextureCubeMap::NEGATIVE_Y,osgDB::readImageFile("resources/textures/sky_clear/up.png"));
+    cubeMap->setImage(osg::TextureCubeMap::POSITIVE_Y,osgDB::readImageFile("resources/textures/sky_clear/down.png"));
+    cubeMap->setImage(osg::TextureCubeMap::NEGATIVE_Z,osgDB::readImageFile("resources/textures/sky_clear/south.png"));
+    cubeMap->setImage(osg::TextureCubeMap::POSITIVE_Z,osgDB::readImageFile("resources/textures/sky_clear/north.png"));
     //天空盒
     osg::ref_ptr<SkyDome> sky = new SkyDome(1900,16,16,cubeMap.get());
 //    sky->setNodeMask(scene->getReflectedSceneMask() | scene->getNormalSceneMask());
@@ -128,6 +130,7 @@ void ViewWidget::initScene()
     osg::ref_ptr<osg::Node> airplane = osgDB::readNodeFile("resources/tian.obj");
     osg::ref_ptr<osg::MatrixTransform> airplaneMat = new osg::MatrixTransform;
     airplaneMat->setMatrix(osg::Matrix::scale(0.005,0.005,0.005)*osg::Matrix::translate(0,0,100));
+    airplaneMat->setUpdateCallback(new AirplaneCallback(scene));
     airplaneMat->addChild(airplane);
     scene->addChild(airplaneMat);
 

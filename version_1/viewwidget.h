@@ -1,18 +1,26 @@
 ﻿#ifndef VIEWWIDGET_H
 #define VIEWWIDGET_H
 
+/**
+* Qt include file
+*/
 #include <QObject>
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QResizeEvent>
 #include <QDebug>
 
+/**
+* user include file
+*/
 #include "skyDome.h"
 #include "SphereSegment.h"
-
 #include "cameracallback.h"
+#include "airplanecallback.h"
 
-
+/**
+* osg include file
+*/
 #include <osgViewer/Viewer>
 #include <osg/MatrixTransform>
 #include <osgDB/ReadFile>
