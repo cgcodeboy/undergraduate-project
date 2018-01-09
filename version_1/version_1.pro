@@ -25,7 +25,8 @@ HEADERS  += mainwindow.h \
     skyDome.h \
     SphereSegment.h \
     viewwidget.h \
-    airplanecallback.h
+    airplanecallback.h \
+    driftcallback.h
 
 FORMS    += mainwindow.ui \
     sim_catalog.ui

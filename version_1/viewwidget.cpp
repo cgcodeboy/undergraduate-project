@@ -1,5 +1,9 @@
 ﻿#include "viewwidget.h"
 
+
+/*
+ *  brief: a function used to add a HUD to the osg scene
+ */
 //osg::ref_ptr<osg::Camera> ViewWidget::createHUD()
 //{
 //    osg::ref_ptr<osg::Camera> camera = new osg::Camera;
@@ -29,7 +33,11 @@
 //    return camera;
 //}
 
-
+/*
+ *  brief: the construct function
+ *          in this function, we need to initalize the context traits, then use these traits to
+ *          to initalize the GraphicsWindowQt, at last use this window to set the camera context.
+ */
 ViewWidget::ViewWidget(QWidget *parent):QWidget(parent)
 {
 //    root = new osg::Group;
@@ -64,17 +72,20 @@ ViewWidget::ViewWidget(QWidget *parent):QWidget(parent)
     QGridLayout *layout = new QGridLayout;
     layout->addWidget(gw->getGLWidget(),0,0);
     setLayout(layout);
-
-    initScene();
-    update();
 }
 
+/*
+ * brief: the update function to repaint the scene
+ */
 void ViewWidget::paintEvent(QPaintEvent *event)
 {
     frame();
     update();
 }
 
+/*
+ * brief: the window resize function
+ */
 void ViewWidget::resizeEvent(QResizeEvent *event)
 {
     this->traits->width = event->size().width();
@@ -83,6 +94,10 @@ void ViewWidget::resizeEvent(QResizeEvent *event)
     getCamera()->setViewport(new osg::Viewport(0,0,traits->width,traits->height));
 }
 
+/*
+ * brief: the initialize function
+ *          in this function, we will initialize the ocean scene, the skybox
+ */
 void ViewWidget::initScene()
 {
     root = new osg::Group;
@@ -90,7 +105,7 @@ void ViewWidget::initScene()
     osg::ref_ptr<osgOcean::FFTOceanSurface> surface = new osgOcean::FFTOceanSurface(64,256,17,osg::Vec2(1.1f,1.1f),12,10,0.8,1e-8,true,2.5,20.0,256);
     surface->enableEndlessOcean(true);
     surface->setIsChoppy(true);
-    osg::ref_ptr<osgOcean::OceanScene> scene = new osgOcean::OceanScene(surface.get());
+    scene = new osgOcean::OceanScene(surface.get());
 
     osg::ref_ptr<osg::TextureCubeMap> cubeMap = new osg::TextureCubeMap;
     cubeMap->setInternalFormat(GL_RGB);
@@ -127,19 +142,42 @@ void ViewWidget::initScene()
     addEventHandler(surface->getEventHandler());
     addEventHandler(scene->getEventHandler());
 
-    osg::ref_ptr<osg::Node> airplane = osgDB::readNodeFile("resources/tian.obj");
-    osg::ref_ptr<osg::MatrixTransform> airplaneMat = new osg::MatrixTransform;
-    airplaneMat->setMatrix(osg::Matrix::scale(0.005,0.005,0.005)*osg::Matrix::translate(0,0,100));
-    airplaneMat->setUpdateCallback(new AirplaneCallback(scene));
-    airplaneMat->addChild(airplane);
-    scene->addChild(airplaneMat);
-
     //    root->addChild(createHUD());
-    setSceneData(scene.get());
 }
 
 //void ViewWidget::addNode(osg::ref_ptr<osg::Node> node)
 //{
 //    root->addChild(node.get());
 //}
+
+void ViewWidget::addDropScene()
+{
+    osg::ref_ptr<osg::Node> airplane = osgDB::readNodeFile("resources/tian.obj");
+    osg::ref_ptr<osg::MatrixTransform> airplaneMat = new osg::MatrixTransform;
+    airplaneMat->setMatrix(osg::Matrix::scale(0.005,0.005,0.005)*osg::Matrix::translate(0,0,100));
+    airplaneMat->setUpdateCallback(new AirplaneCallback(scene));
+    airplaneMat->addChild(airplane);
+    scene->addChild(airplaneMat);
+    setSceneData(scene);
+    update();
+}
+
+void ViewWidget::addDriftScene()
+{
+    qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
+
+    for(int i = 0;i<15;i++)
+    {
+        osg::ref_ptr<osg::MatrixTransform> driftMat = new osg::MatrixTransform;
+        int x = qrand()%500,y = qrand()%500;
+        qDebug()<<x<<" "<<y;
+        driftMat->setMatrix(osg::Matrix::scale(0.01,0.01,0.01)*osg::Matrix::translate(x,y,0));
+        osg::ref_ptr<osg::Node> driftPart = osgDB::readNodeFile(QString("resources/air/part_%1.obj").arg(i).toStdString());
+        driftMat->addChild(driftPart);
+        driftMat->setUpdateCallback(new DriftCallback(scene));
+        scene->addChild(driftMat);
+    }
+    setSceneData(scene);
+    update();
+}
 

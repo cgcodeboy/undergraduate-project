@@ -9,6 +9,8 @@
 #include <QVBoxLayout>
 #include <QResizeEvent>
 #include <QDebug>
+#include <QtGlobal>
+#include <QTime>
 
 /**
 * user include file
@@ -17,6 +19,7 @@
 #include "SphereSegment.h"
 #include "cameracallback.h"
 #include "airplanecallback.h"
+#include "driftcallback.h"
 
 /**
 * osg include file
@@ -37,18 +40,21 @@ class ViewWidget:public QWidget,public osgViewer::Viewer
 public:
     explicit ViewWidget(QWidget *parent = 0);
 
-//    osg::ref_ptr<osg::Camera> createHUD();
-//    void addNode(osg::ref_ptr<osg::Node> node);
+    //    osg::ref_ptr<osg::Camera> createHUD();
+    //    void addNode(osg::ref_ptr<osg::Node> node);
+    void initScene();
+
+    void addDropScene();
+
+    void addDriftScene();
 
 private:
     osg::ref_ptr<osgOcean::OceanScene> scene;
-//    osg::ref_ptr<osgOcean::FFTOceanSurface> surface;
+    //    osg::ref_ptr<osgOcean::FFTOceanSurface> surface;
     osg::ref_ptr<osg::GraphicsContext::Traits>  traits;
 
     virtual void paintEvent(QPaintEvent *event);
     virtual void resizeEvent(QResizeEvent *event);
-
-    void initScene();
 
     osg::ref_ptr<osg::Group> root;
 };

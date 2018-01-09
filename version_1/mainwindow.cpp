@@ -25,6 +25,8 @@ MainWindow::~MainWindow()
 void MainWindow::dropClickSlot()
 {
     ui->main_StackWidght->setCurrentIndex(0);
+    ui->dropMain_Widget->initScene();
+    ui->dropMain_Widget->addDropScene();
 }
 
 /*
@@ -33,6 +35,8 @@ void MainWindow::dropClickSlot()
 void MainWindow::driftClickSlot()
 {
     ui->main_StackWidght->setCurrentIndex(1);
+    ui->driftMain_Widget->initScene();
+    ui->driftMain_Widget->addDriftScene();
 }
 
 void MainWindow::on_subject_TW_itemClicked(QTreeWidgetItem *item, int column)
