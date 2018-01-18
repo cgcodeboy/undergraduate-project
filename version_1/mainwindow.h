@@ -7,6 +7,8 @@
 #include <QMainWindow>
 #include <QDebug>
 #include <QTreeWidget>
+#include <QtWebKit>
+#include <QMessageBox>
 
 /*
  * 引用头文件
@@ -32,7 +34,12 @@ private:
 private slots:
     void dropClickSlot();
     void driftClickSlot();
+    void routeClickSlot();
     void on_subject_TW_itemClicked(QTreeWidgetItem *item, int column);
+    void on_parameter_TW_currentChanged(int index);
+    void on_windDirection_DIAL_valueChanged(int value);
+    void on_currentDirection_DIAL_valueChanged(int value);
+    void on_parameter_TW_tabBarClicked(int index);
 };
 
 #endif // MAINWINDOW_H

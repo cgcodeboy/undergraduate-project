@@ -33,6 +33,7 @@
 #include <osgQt/GraphicsWindowQt>
 #include <osgViewer/ViewerEventHandlers>
 #include <osgGA/TrackballManipulator>
+#include <osg/Version>
 
 class ViewWidget:public QWidget,public osgViewer::Viewer
 {
@@ -46,7 +47,9 @@ public:
 
     void addDropScene();
 
-    void addDriftScene();
+    void addComplexDriftScene();
+
+    void addSimpleDriftScene();
 
 private:
     osg::ref_ptr<osgOcean::OceanScene> scene;

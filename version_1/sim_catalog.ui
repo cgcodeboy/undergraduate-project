@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>418</width>
-    <height>223</height>
+    <width>498</width>
+    <height>216</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,7 +16,7 @@
   <property name="styleSheet">
    <string notr="true">background-color: rgb(95, 95, 95);</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_3">
+  <layout class="QVBoxLayout" name="verticalLayout_4">
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="maximumSize">
@@ -84,6 +84,29 @@
          <widget class="QPushButton" name="drift_BT">
           <property name="text">
            <string>残骸漂移仿真</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="drop_GB_2">
+       <property name="title">
+        <string/>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QWidget" name="route_widght" native="true">
+          <property name="styleSheet">
+           <string notr="true">image: url(:/catalog/picture/earth.png);</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="route_BT">
+          <property name="text">
+           <string>飞行路径模拟</string>
           </property>
          </widget>
         </item>

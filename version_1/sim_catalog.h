@@ -21,10 +21,12 @@ private:
 signals:
     void dropClick();   //a signal for drop_BT click , when it emit ,it will connect with the dropclickslot in mainwindow
     void driftClick();   //a signal for drift_BT click , when it emit ,it will connect with the driftclickslot in mainwindow
+    void routeClick();   //a signal for route_BT click , when it emit ,it will connect with the routeclickslot in mainwindow
 
 private slots:
     void on_drop_BT_clicked();
     void on_drift_BT_clicked();
+    void on_route_BT_clicked();
 };
 
 #endif // SIM_CATALOG_H

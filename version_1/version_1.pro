@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui opengl
+QT += webkit webkitwidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

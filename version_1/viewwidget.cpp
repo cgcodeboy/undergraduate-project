@@ -142,6 +142,8 @@ void ViewWidget::initScene()
     addEventHandler(surface->getEventHandler());
     addEventHandler(scene->getEventHandler());
 
+    setSceneData(scene);
+
     //    root->addChild(createHUD());
 }
 
@@ -150,6 +152,9 @@ void ViewWidget::initScene()
 //    root->addChild(node.get());
 //}
 
+/*
+ * brief: a simulation scene for airplane drop from the sky
+ */
 void ViewWidget::addDropScene()
 {
     osg::ref_ptr<osg::Node> airplane = osgDB::readNodeFile("resources/tian.obj");
@@ -162,21 +167,59 @@ void ViewWidget::addDropScene()
     update();
 }
 
-void ViewWidget::addDriftScene()
+/*
+ * brief: a simulation scene for all the driftor drift in the ocean
+ */
+void ViewWidget::addComplexDriftScene()
 {
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
-
+    osg::ref_ptr<osg::Group> root = scene->asGroup();
+    for(int i = 0;i<root->getNumChildren();i++)
+    {
+        if(root->getChild(i)->getName() == "driftor_group")
+        {
+            root->removeChild(i);
+        }
+    }
+    osg::ref_ptr<osg::Group> driftorGroup = new osg::Group;
+    driftorGroup->setName("driftor_group");
     for(int i = 0;i<15;i++)
     {
         osg::ref_ptr<osg::MatrixTransform> driftMat = new osg::MatrixTransform;
         int x = qrand()%500,y = qrand()%500;
-        qDebug()<<x<<" "<<y;
         driftMat->setMatrix(osg::Matrix::scale(0.01,0.01,0.01)*osg::Matrix::translate(x,y,0));
         osg::ref_ptr<osg::Node> driftPart = osgDB::readNodeFile(QString("resources/air/part_%1.obj").arg(i).toStdString());
         driftMat->addChild(driftPart);
         driftMat->setUpdateCallback(new DriftCallback(scene));
-        scene->addChild(driftMat);
+        driftorGroup->addChild(driftMat);
     }
+    scene->addChild(driftorGroup);
+    setSceneData(scene);
+    update();
+}
+
+/*
+ * brief: a simulation scene for a simple driftor drifts in the ocean
+ */
+void ViewWidget::addSimpleDriftScene()
+{
+    osg::ref_ptr<osg::Group> root = scene->asGroup();
+    for(int i = 0;i<root->getNumChildren();i++)
+    {
+        if(root->getChild(i)->getName() == "driftor_group")
+        {
+            root->removeChild(i);
+        }
+    }
+    osg::ref_ptr<osg::Group> driftorGroup = new osg::Group;
+    driftorGroup->setName("driftor_group");
+    osg::ref_ptr<osg::MatrixTransform> driftMat = new osg::MatrixTransform;
+    driftMat->setMatrix(osg::Matrix::scale(0.01,0.01,0.01)*osg::Matrix::translate(0,0,0));
+    osg::ref_ptr<osg::Node> driftPart = osgDB::readNodeFile("resources/air/part_1.obj");
+    driftMat->addChild(driftPart);
+    driftMat->setUpdateCallback(new DriftCallback(scene));
+    driftorGroup->addChild(driftMat);
+    scene->addChild(driftorGroup);
     setSceneData(scene);
     update();
 }

@@ -44,6 +44,7 @@ public:
     }
 private:
     osgOcean::OceanScene * _scene;
+
 };
 
 #endif // DRIFTCALLBACK
