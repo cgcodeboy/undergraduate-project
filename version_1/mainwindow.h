@@ -9,6 +9,7 @@
 #include <QTreeWidget>
 #include <QtWebKit>
 #include <QMessageBox>
+#include <QtMath>
 
 /*
  * 引用头文件
@@ -40,6 +41,7 @@ private slots:
     void on_windDirection_DIAL_valueChanged(int value);
     void on_currentDirection_DIAL_valueChanged(int value);
     void on_parameter_TW_tabBarClicked(int index);
+    void on_calculate_PB_clicked();
 };
 
 #endif // MAINWINDOW_H

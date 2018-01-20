@@ -51,9 +51,11 @@ public:
 
     void addSimpleDriftScene();
 
+    osg::ref_ptr<osgOcean::FFTOceanSurface> getOceanSurface();
+
 private:
     osg::ref_ptr<osgOcean::OceanScene> scene;
-    //    osg::ref_ptr<osgOcean::FFTOceanSurface> surface;
+    osg::ref_ptr<osgOcean::FFTOceanSurface> surface;
     osg::ref_ptr<osg::GraphicsContext::Traits>  traits;
 
     virtual void paintEvent(QPaintEvent *event);

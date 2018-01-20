@@ -18,7 +18,8 @@ SOURCES += main.cpp\
     sim_catalog.cpp \
     skydome.cpp \
     spheresegment.cpp \
-    viewwidget.cpp
+    viewwidget.cpp \
+    driftcalculatecore.cpp
 
 HEADERS  += mainwindow.h \
     sim_catalog.h \
@@ -27,7 +28,9 @@ HEADERS  += mainwindow.h \
     SphereSegment.h \
     viewwidget.h \
     airplanecallback.h \
-    driftcallback.h
+    driftcallback.h \
+    driftcalculatecore.h \
+    all_include.h
 
 FORMS    += mainwindow.ui \
     sim_catalog.ui

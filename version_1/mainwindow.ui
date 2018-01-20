@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1058</width>
-    <height>597</height>
+    <height>601</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -401,48 +401,7 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QComboBox" name="windForce_CB">
-                      <item>
-                       <property name="text">
-                        <string>1级</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>2级</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>3级</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>4级</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>5级</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>6级</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>7级</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>8级</string>
-                       </property>
-                      </item>
-                     </widget>
+                     <widget class="QLineEdit" name="windVelocity_LE"/>
                     </item>
                    </layout>
                   </item>

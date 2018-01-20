@@ -102,7 +102,7 @@ void ViewWidget::initScene()
 {
     root = new osg::Group;
 
-    osg::ref_ptr<osgOcean::FFTOceanSurface> surface = new osgOcean::FFTOceanSurface(64,256,17,osg::Vec2(1.1f,1.1f),12,10,0.8,1e-8,true,2.5,20.0,256);
+    surface = new osgOcean::FFTOceanSurface(64,256,17,osg::Vec2(1.1f,1.1f),12,10,0.8,1e-8,true,2.5,20.0,256);
     surface->enableEndlessOcean(true);
     surface->setIsChoppy(true);
     scene = new osgOcean::OceanScene(surface.get());
@@ -222,5 +222,13 @@ void ViewWidget::addSimpleDriftScene()
     scene->addChild(driftorGroup);
     setSceneData(scene);
     update();
+}
+
+/*
+ * brief: return the ocean surface;
+ */
+osg::ref_ptr<osgOcean::FFTOceanSurface> ViewWidget::getOceanSurface()
+{
+    return this->surface;
 }
 
