@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/catalog">
+        <file>picture/drop.png</file>
+        <file>picture/drift.png</file>
+        <file>picture/earth.png</file>
+    </qresource>
+    <qresource prefix="/page">
+        <file>page/map.html</file>
+    </qresource>
+    <qresource prefix="/picture">
+        <file>picture/down.png</file>
+    </qresource>
+</RCC>
