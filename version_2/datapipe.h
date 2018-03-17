@@ -15,17 +15,17 @@ class DataPair
 public:
     DataPair() = default;
 
-    DataPair(MVec windVec,MVec currentVec):inner_windVec(windVec),inner_currentVec(currentVec){}
+    DataPair(MVec2 windVec,MVec2 currentVec):inner_windVec(windVec),inner_currentVec(currentVec){}
 
-    MVec getInner_windVec() const;
-    void setInner_windVec(const MVec &value);
+    MVec2 getInner_windVec() const;
+    void setInner_windVec(const MVec2 &value);
 
-    MVec getInner_currentVec() const;
-    void setInner_currentVec(const MVec &value);
+    MVec2 getInner_currentVec() const;
+    void setInner_currentVec(const MVec2 &value);
 
 private:
-    MVec inner_windVec;
-    MVec inner_currentVec;
+    MVec2 inner_windVec;
+    MVec2 inner_currentVec;
 };
 
 class DataPipe

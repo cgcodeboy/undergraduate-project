@@ -6,33 +6,37 @@
 ////////////////////
 
 // a struct for Vector include two
-class MVec{
+class MVec2{
 private:
     float x;
     float y;
 
 public:
-    MVec() = default;
+    MVec2() = default;
 
-    MVec(float _x,float _y):x(_x),y(_y){}
+    MVec2(float _x,float _y):x(_x),y(_y){}
 
-    inline MVec operator+(const MVec &v) const{
-        return MVec(x + v.getX(), y + v.getY());
+    MVec2(const MVec2 &vec2){this->x = vec2.getX(),this->y = vec2.getY();}
+
+    MVec2& operator = (const MVec2 &vec2){return MVec2(vec2.getX(),vec2.getY());}
+
+    inline MVec2 operator+(const MVec2 &v) const{
+        return MVec2(x + v.getX(), y + v.getY());
     }
 
-    inline MVec operator-(const MVec &v) const{
-        return MVec(x - v.getX(), y - v.getY());
+    inline MVec2 operator-(const MVec2 &v) const{
+        return MVec2(x - v.getX(), y - v.getY());
     }
 
-    inline MVec operator *(const float &v) const{
-        return MVec(x * v,y *v);
+    inline MVec2 operator *(const float &v) const{
+        return MVec2(x * v,y *v);
     }
 
-    inline MVec operator /(const float &v) const{
-        return MVec(x / v,y /v);
+    inline MVec2 operator /(const float &v) const{
+        return MVec2(x / v,y /v);
     }
 
-    inline static float dot(const MVec &v1, const MVec &v2){
+    inline static float dot(const MVec2 &v1, const MVec2 &v2){
         return v1.getX() * v2.getX() + v1.getY() * v2.getY();
     }
 
@@ -52,6 +56,67 @@ public:
 
     inline bool valid(){
         if(x == 0 && y ==0){
+            return false;
+        }
+        return true;
+    }
+
+};
+
+class MVec3{
+private:
+    float x;
+    float y;
+    float z;
+
+public:
+    MVec3() = default;
+
+    MVec3(float _x,float _y,float _z):x(_x),y(_y),z(_z){}
+
+    MVec3(const MVec3 &vec3){this->x = vec3.getX(),this->y = vec3.getY(),this->z = vec3.getZ();}
+
+    MVec3& operator = (const MVec3 &vec3){return MVec2(vec3.getX(),vec3.getY(),vec3.getZ());}
+
+    inline MVec3 operator+(const MVec3 &v) const{
+        return MVec3(x + v.getX(), y + v.getY(),z + v.getZ());
+    }
+
+    inline MVec3 operator-(const MVec3 &v) const{
+        return MVec3(x - v.getX(), y - v.getY(),z - v.getZ());
+    }
+
+    inline MVec3 operator *(const float &v) const{
+        return MVec3(x * v,y *v,z *v);
+    }
+
+    inline MVec3 operator /(const float &v) const{
+        return MVec3(x / v,y /v,z /v);
+    }
+
+    inline static float dot(const MVec3 &v1, const MVec3 &v2){
+        return v1.getX() * v2.getX() + v1.getY() * v2.getY() + v1.getZ() * v2.getZ();
+    }
+
+    inline float lengthSquare() const{
+        return  x * x + y * y + z * z;
+    }
+
+    inline float length() const{
+        return sqrtf(lengthSquare());
+    }
+    inline float getY() const{
+        return x;
+    }
+    inline float getX() const{
+        return y;
+    }
+    inline float getZ() const{
+        return z;
+    }
+
+    inline bool valid(){
+        if(x == 0 && y ==0 && z == 0){
             return false;
         }
         return true;

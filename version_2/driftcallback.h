@@ -6,6 +6,8 @@
 #include <osg/NodeVisitor>
 #include <osg/Matrix>
 
+#include <QDebug>
+
 class DriftCallback :public osg::NodeCallback{
 public:
     DriftCallback(osgOcean::OceanScene * scene){
@@ -23,6 +25,8 @@ public:
 
                 osg::Vec3f normal;
                 float height = _scene->getOceanSurfaceHeightAt(pos[0],pos[1],&normal);
+
+                qDebug()<<height;
 
                 mat->setMatrix(osg::Matrix::scale(0.005,0.005,0.005)*osg::Matrix::translate(pos[0],pos[1],height));
 

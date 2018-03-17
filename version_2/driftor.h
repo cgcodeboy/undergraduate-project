@@ -17,19 +17,19 @@ class Driftor
 public:
     Driftor();
 
-    MVec getInner_windSpeed() const;
-    void setInner_windSpeed(const MVec &value);
+    MVec2 getInner_windSpeed() const;
+    void setInner_windSpeed(const MVec2 &value);
 
-    MVec getInner_currentSpeed() const;
-    void setInner_currentSpeed(const MVec &value);
+    MVec2 getInner_currentSpeed() const;
+    void setInner_currentSpeed(const MVec2 &value);
 
-    MVec getInner_position() const;
-    void setInner_position(const MVec &value);
+    MVec2 getInner_position() const;
+    void setInner_position(const MVec2 &value);
 
 private:
-    MVec inner_windSpeed;
-    MVec inner_currentSpeed;
-    MVec inner_position;
+    MVec2 inner_windSpeed;
+    MVec2 inner_currentSpeed;
+    MVec2 inner_position;
 };
 
 #endif // DRIFTOR_H

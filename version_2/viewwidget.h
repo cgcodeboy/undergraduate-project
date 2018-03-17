@@ -53,6 +53,8 @@ public:
 
     osg::ref_ptr<osgOcean::FFTOceanSurface> getOceanSurface();
 
+    void setSimpleAnimationPath(osg::ref_ptr<osg::AnimationPath> path);
+
 private:
     osg::ref_ptr<osgOcean::OceanScene> scene;
     osg::ref_ptr<osgOcean::FFTOceanSurface> surface;

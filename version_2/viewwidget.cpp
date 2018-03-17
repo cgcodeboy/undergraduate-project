@@ -232,3 +232,23 @@ osg::ref_ptr<osgOcean::FFTOceanSurface> ViewWidget::getOceanSurface()
     return this->surface;
 }
 
+void ViewWidget::setSimpleAnimationPath(osg::ref_ptr<osg::AnimationPath> path)
+{
+    osg::ref_ptr<osg::Group> root = scene->asGroup();
+    for(int i = 0;i<root->getNumChildren();i++)
+    {
+        if(root->getChild(i)->getName() == "driftor_group")
+        {
+            qDebug()<<"haha";
+            osg::ref_ptr<osg::Group> drift_Group = root->getChild(i)->asGroup();
+
+            path->setLoopMode(osg::AnimationPath::NO_LOOPING);
+            osg::ref_ptr<osg::AnimationPathCallback> animationPathCallback = new osg::AnimationPathCallback;
+            animationPathCallback->setAnimationPath(path);
+
+            osg::ref_ptr<osg::Node> matTrans = drift_Group->getChild(0);
+            matTrans->setUpdateCallback(animationPathCallback);
+        }
+    }
+}
+

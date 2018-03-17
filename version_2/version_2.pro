@@ -9,7 +9,7 @@ QT += webkit webkitwidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = version_1
+TARGET = version_2
 TEMPLATE = app
 
 
@@ -55,5 +55,5 @@ CONFIG(debug, debug|release) {
 }
 
 DISTFILES += \
-    version_1.pro.user
+    version_2.pro.user
 

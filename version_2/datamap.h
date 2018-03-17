@@ -17,11 +17,11 @@ class DataNode{
 public:
     DataNode(int lng,int lat):inner_lat(lat),inner_lng(lng){}
 
-    MVec getInner_windSpeed() const;
-    void setInner_windSpeed(const MVec &value);
+    MVec2 getInner_windSpeed() const;
+    void setInner_windSpeed(const MVec2 &value);
 
-    MVec getInner_curentSpeed() const;
-    void setInner_curentSpeed(const MVec &value);
+    MVec2 getInner_curentSpeed() const;
+    void setInner_curentSpeed(const MVec2 &value);
 
     int getInner_lng() const;
 
@@ -31,8 +31,8 @@ private:
     int inner_lng;
     int inner_lat;
 
-    MVec inner_windSpeed;
-    MVec inner_curentSpeed;
+    MVec2 inner_windSpeed;
+    MVec2 inner_curentSpeed;
 };
 
 class DataMap:public QObject
@@ -48,8 +48,8 @@ private slots:
 
 private:
     vector<DataNode> inner_nodeVec;
-    MVec *inner_standardWind;
-    MVec *inner_standardCurrent;
+    MVec2 *inner_standardWind;
+    MVec2 *inner_standardCurrent;
     QTimer inner_timer;
 };
 

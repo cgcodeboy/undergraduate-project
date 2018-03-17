@@ -10,22 +10,22 @@ void DataPipe::setDataMap(DataMap *map)
     inner_map = map;
 }
 
-MVec DataPair::getInner_windVec() const
+MVec2 DataPair::getInner_windVec() const
 {
     return inner_windVec;
 }
 
-void DataPair::setInner_windVec(const MVec &value)
+void DataPair::setInner_windVec(const MVec2 &value)
 {
     inner_windVec = value;
 }
 
-MVec DataPair::getInner_currentVec() const
+MVec2 DataPair::getInner_currentVec() const
 {
     return inner_currentVec;
 }
 
-void DataPair::setInner_currentVec(const MVec &value)
+void DataPair::setInner_currentVec(const MVec2 &value)
 {
     inner_currentVec = value;
 }

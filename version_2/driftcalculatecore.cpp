@@ -13,7 +13,7 @@ DriftCalculateCore::DriftCalculateCore(COMPUTE_TYPE type):inner_type(type)
  *
  * output: it will return the value of the speed of the wind
  */
-MVec DriftCalculateCore::getInner_windSpeed() const
+MVec2 DriftCalculateCore::getInner_windSpeed() const
 {
     return inner_windSpeed;
 }
@@ -23,7 +23,7 @@ MVec DriftCalculateCore::getInner_windSpeed() const
  *
  * input: it need a input of float value, which is the speed of the wind
  */
-void DriftCalculateCore::setInner_windSpeed(MVec value)
+void DriftCalculateCore::setInner_windSpeed(MVec2 value)
 {
     inner_windSpeed = value;
 }
@@ -33,7 +33,7 @@ void DriftCalculateCore::setInner_windSpeed(MVec value)
  *
  * output: it will return the value of speed of the current
  */
-MVec DriftCalculateCore::getInner_currentSpeed() const
+MVec2 DriftCalculateCore::getInner_currentSpeed() const
 {
     return inner_currentSpeed;
 }
@@ -43,7 +43,7 @@ MVec DriftCalculateCore::getInner_currentSpeed() const
  *
  * input: it need a input of float value, which is the speed of the current
  */
-void DriftCalculateCore::setInner_currentSpeed(MVec value)
+void DriftCalculateCore::setInner_currentSpeed(MVec2 value)
 {
     inner_currentSpeed = value;
 }
@@ -93,7 +93,7 @@ void DriftCalculateCore::setInner_updateFrequency(int value)
  *
  * output: it will return the value of the initial position
  */
-MVec DriftCalculateCore::getInner_initPosition() const
+MVec2 DriftCalculateCore::getInner_initPosition() const
 {
     return inner_initPosition;
 }
@@ -101,9 +101,9 @@ MVec DriftCalculateCore::getInner_initPosition() const
 /*
  * brief: the setter of the initial position of the object
  *
- * input: it need a input of MVec, which is the initial position of the object
+ * input: it need a input of MVec2, which is the initial position of the object
  */
-void DriftCalculateCore::setInner_initPosition(const MVec &value)
+void DriftCalculateCore::setInner_initPosition(const MVec2 &value)
 {
     inner_initPosition = value;
 }
@@ -121,14 +121,14 @@ void DriftCalculateCore::setInner_spacialCorrelation(float value)
 /*
  * brief: a function used to compute the B correlation between two point
  *
- * input: it need two MVec of point and two MVec of speed
+ * input: it need two MVec2 of point and two MVec2 of speed
  *
  * output: it will return the B correlation value between 0 to 1
  */
 float DriftCalculateCore::compute_B_correlation(int index,VELOCITY_TYPE type)
 {
     Driftor driftor = inner_driftorVec[index];
-    MVec subPoint = driftor.getInner_position() - inner_coreDriftor.getInner_position();
+    MVec2 subPoint = driftor.getInner_position() - inner_coreDriftor.getInner_position();
 
     float square = subPoint.lengthSquare();
     if(type == WIND){
@@ -142,29 +142,29 @@ float DriftCalculateCore::compute_B_correlation(int index,VELOCITY_TYPE type)
 /*
  * brief: a function used to compute the Eulerian  correlation between the speeds of two points
  *
- * input: it need two MVec of speed
+ * input: it need two MVec2 of speed
  *
  * output: it will return the R correlation value
  */
-float DriftCalculateCore::compute_R_correlation(MVec speed_1,MVec speed_2)
+float DriftCalculateCore::compute_R_correlation(MVec2 speed_1,MVec2 speed_2)
 {
-    float dotMul = MVec::dot(speed_1,speed_2);
+    float dotMul = MVec2::dot(speed_1,speed_2);
 
     return dotMul/(speed_1.length()*speed_2.length());
     return 0;
 }
 
-MVec DriftCalculateCore::synthesisWindSpeed(MVec wind_speed)
+MVec2 DriftCalculateCore::synthesisWindSpeed(MVec2 wind_speed)
 {
     default_random_engine engine;
     normal_distribution<float> normal(wind_speed.length(),inner_windDeviation);
     for(unsigned int i = 0;i < inner_driftorVec.size();i++){
         Driftor cur_driftor = inner_driftorVec.at(i);
         //wait for correcting...
-        cur_driftor.setInner_windSpeed(MVec(normal(engine)*cosf(static_cast<float>(rand()%10)),normal(engine)*sinf(static_cast<float>(rand()%10))));
+        cur_driftor.setInner_windSpeed(MVec2(normal(engine)*cosf(static_cast<float>(rand()%10)),normal(engine)*sinf(static_cast<float>(rand()%10))));
     }
 
-    MVec sum;
+    MVec2 sum;
     int count = 0;
     for(unsigned int i = 0;i < inner_driftorVec.size();i++){
         float b_value = compute_B_correlation(i,WIND);
@@ -177,17 +177,17 @@ MVec DriftCalculateCore::synthesisWindSpeed(MVec wind_speed)
     return sum/static_cast<float>(count);
 }
 
-MVec DriftCalculateCore::synthesisCurrentSpeed(MVec current_speed)
+MVec2 DriftCalculateCore::synthesisCurrentSpeed(MVec2 current_speed)
 {
     default_random_engine engine;
     normal_distribution<float> normal(current_speed.length(),inner_currentDeviation);
     for(unsigned int i = 0;i<inner_driftorVec.size();i++){
         Driftor cur_driftor = inner_driftorVec.at(i);
         //wait for correcting...
-        cur_driftor.setInner_currentSpeed(MVec(normal(engine)*cosf(static_cast<float>(rand()%10)),normal(engine)*sinf(static_cast<float>(rand()%10))));
+        cur_driftor.setInner_currentSpeed(MVec2(normal(engine)*cosf(static_cast<float>(rand()%10)),normal(engine)*sinf(static_cast<float>(rand()%10))));
     }
 
-    MVec sum;
+    MVec2 sum;
     int count = 0;
     for(unsigned int i = 0;i<inner_driftorVec.size();i++){
         float b_value = compute_B_correlation(i,CURRENT);
@@ -205,17 +205,17 @@ MVec DriftCalculateCore::synthesisCurrentSpeed(MVec current_speed)
  *
  * input: it need input the wind velocity and current velocity
  */
-MVec DriftCalculateCore::synthesisObjectSpeed()
+MVec2 DriftCalculateCore::synthesisObjectSpeed()
 {
     if(inner_type == SIMPLE){
         float object_SpeedX = inner_windSpeed.getX()*(1-this->inner_leewayRate) + inner_currentSpeed.getX()*this->inner_leewayRate;
         float object_SpeedY = inner_windSpeed.getY()*(1-this->inner_leewayRate) + inner_currentSpeed.getY()*this->inner_leewayRate;
-        return MVec(object_SpeedX,object_SpeedY);
+        return MVec2(object_SpeedX,object_SpeedY);
     }else{
         DataPair curPair = inner_dataPipe.getData(inner_coreDriftor.getInner_position().getX(),inner_coreDriftor.getInner_position().getY());
         float object_SpeedX = synthesisWindSpeed(curPair.getInner_windVec()).getX()*(1-this->inner_leewayRate) + synthesisCurrentSpeed(curPair.getInner_currentVec()).getX()*this->inner_leewayRate;
         float object_SpeedY = synthesisWindSpeed(curPair.getInner_windVec()).getY()*(1-this->inner_leewayRate) + synthesisCurrentSpeed(curPair.getInner_currentVec()).getY()*this->inner_leewayRate;
-        return MVec(object_SpeedX,object_SpeedY);
+        return MVec2(object_SpeedX,object_SpeedY);
     }
 }
 
@@ -225,8 +225,8 @@ void DriftCalculateCore::updatePosition()
         Driftor cur_driftor = inner_driftorVec.at(i);
         float object_SpeedX = cur_driftor.getInner_windSpeed().getX()*(1-this->inner_leewayRate) + cur_driftor.getInner_currentSpeed().getX()*this->inner_leewayRate;
         float object_SpeedY = cur_driftor.getInner_windSpeed().getY()*(1-this->inner_leewayRate) + cur_driftor.getInner_currentSpeed().getY()*this->inner_leewayRate;
-        MVec cur_position = cur_driftor.getInner_position();
-        cur_driftor.setInner_position(MVec(cur_position.getX()+object_SpeedX,cur_position.getY()+object_SpeedY));
+        MVec2 cur_position = cur_driftor.getInner_position();
+        cur_driftor.setInner_position(MVec2(cur_position.getX()+object_SpeedX,cur_position.getY()+object_SpeedY));
     }
 }
 
@@ -235,7 +235,7 @@ void DriftCalculateCore::updatePosition()
  *
  * output: a vector contains all the point in the route
  */
-vector<MVec> DriftCalculateCore::getDriftRoute()
+vector<MVec2> DriftCalculateCore::getDriftRoute()
 {
     if(inner_type == SIMPLE){
         return getSimpleDriftRoute();
@@ -245,28 +245,28 @@ vector<MVec> DriftCalculateCore::getDriftRoute()
     }
 }
 
-vector<MVec> DriftCalculateCore::getSimpleDriftRoute()
+vector<MVec2> DriftCalculateCore::getSimpleDriftRoute()
 {
-    vector<MVec> routeVec;
-    MVec object_Speed = synthesisObjectSpeed();
+    vector<MVec2> routeVec;
+    MVec2 object_Speed = synthesisObjectSpeed();
     int step = inner_simulateTime/inner_updateFrequency;
     for(int i = 0;i<step;i++){
-        MVec vec(inner_initPosition.getX()+object_Speed.getX()*i,inner_initPosition.getY()+object_Speed.getY()*i);
+        MVec2 vec(inner_initPosition.getX()+object_Speed.getX()*i,inner_initPosition.getY()+object_Speed.getY()*i);
         routeVec.push_back(vec);
     }
     return routeVec;
 }
 
-vector<MVec> DriftCalculateCore::getComplexDriftRoute()
+vector<MVec2> DriftCalculateCore::getComplexDriftRoute()
 {
-    vector<MVec> routeVec;
+    vector<MVec2> routeVec;
     int step = inner_simulateTime/inner_updateFrequency;
     for(int i = 0;i<step;i++){
-        MVec object_Speed = synthesisObjectSpeed();
-        MVec vec(inner_initPosition.getX()+object_Speed.getX()*i,inner_initPosition.getY()+object_Speed.getY()*i);
+        MVec2 object_Speed = synthesisObjectSpeed();
+        MVec2 vec(inner_initPosition.getX()+object_Speed.getX()*i,inner_initPosition.getY()+object_Speed.getY()*i);
         routeVec.push_back(vec);
-        MVec cur_position = inner_coreDriftor.getInner_position();
-        inner_coreDriftor.setInner_position(MVec(cur_position.getX()+object_Speed.getX(),cur_position.getY()+object_Speed.getY()));
+        MVec2 cur_position = inner_coreDriftor.getInner_position();
+        inner_coreDriftor.setInner_position(MVec2(cur_position.getX()+object_Speed.getX(),cur_position.getY()+object_Speed.getY()));
         updatePosition();
     }
     return routeVec;

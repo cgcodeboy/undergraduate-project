@@ -1,4 +1,4 @@
-#ifndef MAINWINDOW_H
+﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 /*
@@ -17,6 +17,11 @@
 #include <sim_catalog.h>
 #include <driftcalculatecore.h>
 
+/*
+ * osg header file
+ */
+#include <osg/AnimationPath>
+#include <osg/Vec2>
 
 namespace Ui {
 class MainWindow;
@@ -28,10 +33,15 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = 0);
+
+    osg::ref_ptr<osg::AnimationPath> generateAnimationPath(vector<osg::Vec2> path_Vec);
     ~MainWindow();
 
 private:
     Ui::MainWindow *ui;
+
+//    osg::ref_ptr<osg::AnimationPath> generateAnimationPath(osg::ref_ptr<osg::Vec2Array>);
+
 
 private slots:
     void dropClickSlot();
