@@ -30,9 +30,9 @@ void DataPair::setInner_currentVec(const MVec2 &value)
     inner_currentVec = value;
 }
 
-DataPair DataPipe::getData(int lng, int lat)
+DataPair DataPipe::getData(int x, int y)
 {
-    DataNode node = inner_map->getData(lng,lat);
+    DataNode node = inner_map->getData(x,y);
 
     DataPair pair(node.getInner_windSpeed(),node.getInner_curentSpeed());
 

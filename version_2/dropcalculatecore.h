@@ -7,6 +7,8 @@
 #include <vector>
 #include <math.h>
 
+#include <QDebug>
+
 #include <osg/AnimationPath>
 
 #include <all_include.h>

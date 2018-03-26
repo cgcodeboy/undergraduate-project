@@ -36,11 +36,15 @@ vector<MVec3> DropcalculateCore::getDropRoute()
     routeVec.push_back(inner_Position);
     MVec3 position(inner_Position);
     MVec3 speed(inner_flySpeed);
+    //qDebug()<<"speed: "<<speed.getX()<<" "<<speed.getY();
     while(position.getZ()>0){
         MVec3 compositonForce = generateCompositionForces(speed,position.getZ());
         MVec3 accelerator = generateAccelerator(compositonForce);
+        //qDebug()<<"accelerator: "<<accelerator.getX()<<" "<<accelerator.getY()<<" "<<accelerator.getZ();
         speed = calculteVelocity(speed,accelerator);
         position = calculatePosition(speed,position);
+//        qDebug()<<"speed: "<<speed.getX()<<" "<<speed.getY()<<" "<<speed.getZ();
+//        qDebug()<<"position: "<<position.getX()<<" "<<position.getY()<<" "<<position.getZ();
         routeVec.push_back(position);
     }
     return routeVec;
@@ -57,7 +61,9 @@ float DropcalculateCore::calcalateAirDensity(float _height)
 {
     float p = calculatePressure(_height);
     float T = calculateTemperature(_height);
-    return (p * M)/(R * T);
+    float cur = (p * M)/(R * T);
+    //qDebug()<<"cur: "<<cur;
+    return cur;
 }
 
 float DropcalculateCore::calculateTemperature(float _height)
@@ -78,6 +84,7 @@ MVec3 DropcalculateCore::generateLift(const MVec3& _speed,float _height)
 MVec3 DropcalculateCore::generateCompositionForces(const MVec3& _speed,float _height)
 {
     MVec3 resistance = generateResistance(_speed,_height);
+    //qDebug()<<"resistance: "<<resistance.getX()<<" "<<resistance.getY();
     return MVec3(resistance.getX(),resistance.getY(),generateGravity().getZ() + generateLift(_speed,_height).getZ());
 }
 
@@ -98,7 +105,10 @@ MVec3 DropcalculateCore::calculatePosition(MVec3 _oldSpeed, MVec3 _oldPosition)
 
 MVec3 DropcalculateCore::generateResistance(const MVec3& _speed, float _height)
 {
-    return MVec3(0.5 * 0.08 * calcalateAirDensity(_height) * _speed.getX() * _speed.getX(),\
-                 0.5 * 0.08 * calcalateAirDensity(_height) * _speed.getY() * _speed.getY(),0);
+    float tt = 0.5 * 0.08 * calcalateAirDensity(_height);
+    float x = 0.5 * 0.08 * calcalateAirDensity(_height) * _speed.getX() * _speed.getX();
+    float y = 0.5 * 0.08 * calcalateAirDensity(_height) * _speed.getY() * _speed.getY();
+    qDebug()<<"xy: "<<x<<" "<<y;
+    return MVec3(x,y,0);
 }
 

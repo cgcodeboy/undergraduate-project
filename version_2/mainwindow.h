@@ -16,12 +16,14 @@
  */
 #include <sim_catalog.h>
 #include <driftcalculatecore.h>
+#include <dropcalculatecore.h>
 
 /*
  * osg header file
  */
 #include <osg/AnimationPath>
 #include <osg/Vec2>
+#include <osg/Vec3>
 
 namespace Ui {
 class MainWindow;
@@ -34,7 +36,8 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
 
-    osg::ref_ptr<osg::AnimationPath> generateAnimationPath(vector<osg::Vec2> path_Vec);
+    osg::ref_ptr<osg::AnimationPath> generateDriftAnimationPath(vector<osg::Vec2> path_Vec);
+    osg::ref_ptr<osg::AnimationPath> generateDropAnimationPath(vector<osg::Vec3> path_Vec);
     ~MainWindow();
 
 private:
@@ -53,6 +56,7 @@ private slots:
     void on_currentDirection_DIAL_valueChanged(int value);
     void on_parameter_TW_tabBarClicked(int index);
     void on_calculate_PB_clicked();
+    void on_dropStart_BT_clicked();
 };
 
 #endif // MAINWINDOW_H

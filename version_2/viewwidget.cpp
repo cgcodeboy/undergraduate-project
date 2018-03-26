@@ -159,6 +159,7 @@ void ViewWidget::addDropScene()
 {
     osg::ref_ptr<osg::Node> airplane = osgDB::readNodeFile("resources/tian.obj");
     osg::ref_ptr<osg::MatrixTransform> airplaneMat = new osg::MatrixTransform;
+    airplaneMat->setName("airplanemat");
     airplaneMat->setMatrix(osg::Matrix::scale(0.005,0.005,0.005)*osg::Matrix::translate(0,0,100));
     airplaneMat->setUpdateCallback(new AirplaneCallback(scene));
     airplaneMat->addChild(airplane);
@@ -232,7 +233,7 @@ osg::ref_ptr<osgOcean::FFTOceanSurface> ViewWidget::getOceanSurface()
     return this->surface;
 }
 
-void ViewWidget::setSimpleAnimationPath(osg::ref_ptr<osg::AnimationPath> path)
+void ViewWidget::setSimpleDriftAnimationPath(osg::ref_ptr<osg::AnimationPath> path)
 {
     osg::ref_ptr<osg::Group> root = scene->asGroup();
     for(int i = 0;i<root->getNumChildren();i++)
@@ -248,6 +249,27 @@ void ViewWidget::setSimpleAnimationPath(osg::ref_ptr<osg::AnimationPath> path)
 
             osg::ref_ptr<osg::Node> matTrans = drift_Group->getChild(0);
             matTrans->setUpdateCallback(animationPathCallback);
+        }
+    }
+}
+
+void ViewWidget::setDropAnimationPath(osg::ref_ptr<osg::AnimationPath> path)
+{
+    osg::ref_ptr<osg::Group> root = scene->asGroup();
+    for(int i = 0;i<root->getNumChildren();i++)
+    {
+        if(root->getChild(i)->getName() == "airplanemat")
+        {
+            qDebug()<<"haha";
+            osg::ref_ptr<osg::AnimationPathCallback> callback = new osg::AnimationPathCallback;
+            callback->setAnimationPath(path);
+
+            path->setLoopMode(osg::AnimationPath::NO_LOOPING);
+            osg::ref_ptr<osg::Node> airPlaneMat = root->getChild(i);
+            airPlaneMat->setUpdateCallback(callback);
+            osgGA::TrackballManipulator *tb = dynamic_cast<osgGA::TrackballManipulator*>( this->getCameraManipulator());
+            tb->setHomePosition(osg::Vec3(5000,5000,50),osg::Vec3(4500,4500,0),osg::Z_AXIS);
+            setCameraManipulator(tb);
         }
     }
 }

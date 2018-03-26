@@ -18,7 +18,7 @@ public:
 
     MVec2(const MVec2 &vec2){this->x = vec2.getX(),this->y = vec2.getY();}
 
-    MVec2& operator = (const MVec2 &vec2){return MVec2(vec2.getX(),vec2.getY());}
+    MVec2& operator = (const MVec2 &vec2){this->x = vec2.getX(),this->y = vec2.getY();return *this;}
 
     inline MVec2 operator+(const MVec2 &v) const{
         return MVec2(x + v.getX(), y + v.getY());
@@ -76,7 +76,7 @@ public:
 
     MVec3(const MVec3 &vec3){this->x = vec3.getX(),this->y = vec3.getY(),this->z = vec3.getZ();}
 
-    MVec3& operator = (const MVec3 &vec3){return MVec2(vec3.getX(),vec3.getY(),vec3.getZ());}
+    MVec3& operator = (const MVec3 &vec3){this->x = vec3.getX(),this->y = vec3.getY(),this->z = vec3.getZ();return *this;}
 
     inline MVec3 operator+(const MVec3 &v) const{
         return MVec3(x + v.getX(), y + v.getY(),z + v.getZ());
