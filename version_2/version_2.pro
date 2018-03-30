@@ -38,7 +38,8 @@ HEADERS  += mainwindow.h \
     dropcalculatecore.h \
     driftor.h \
     datapipe.h \
-    datamap.h
+    datamap.h \
+    followadaptor.h
 
 FORMS    += mainwindow.ui \
     sim_catalog.ui

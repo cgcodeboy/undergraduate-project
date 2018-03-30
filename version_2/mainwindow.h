@@ -17,6 +17,7 @@
 #include <sim_catalog.h>
 #include <driftcalculatecore.h>
 #include <dropcalculatecore.h>
+#include <followadaptor.h>
 
 /*
  * osg header file

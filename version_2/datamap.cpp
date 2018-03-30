@@ -27,6 +27,17 @@ DataNode DataMap::getData(int x, int y)
 
     CurrentDataNode *_leftTopCurrentNode,*_leftBottomCurrentNode,*_rightTopCurrentNode,*_rightBottomCurrentNode;
 
+    float leftTopOrderless;
+    float leftBottomOrderless;
+    float rightTopOrderless;
+    float rightBottomOrderless;
+
+    float leftTopPart;
+    float leftBottomPart;
+    float rightTopPart;
+    float rightBottomPart;
+    float allPart;
+
     vector<CurrentDataNode> *cur_currentVec = new vector<CurrentDataNode>;
 
     //travel all the current node, get call the node in the mask and the four node which is the nearest to the
@@ -52,25 +63,35 @@ DataNode DataMap::getData(int x, int y)
         }
     }
 
-    //calculate the orderless of current in the four ivory  corner
-    float leftTopOrderless = calculateCurrentOrderless(top,y,left,x,cur_currentVec);
-    float leftBottomOrderless = calculateCurrentOrderless(y,bottom,left,x,cur_currentVec);
-    float rightTopOrderless = calculateCurrentOrderless(top,y,x,right,cur_currentVec);
-    float rightBottomOrderless = calculateCurrentOrderless(y,bottom,x,right,cur_currentVec);
+    MVec2 currentData(0,0);
+    if(cur_currentVec->size() == 0){
+        for(int i = 0;i<inner_currentNodeVec.size();i++){
+            CurrentDataNode cur_currentNode = inner_currentNodeVec[i];
+            currentData = currentData + cur_currentNode.getInnerData();
+        }
+        currentData = currentData / inner_currentNodeVec.size();
+    }
+    else{
+        //calculate the orderless of current in the four ivory  corner
+        leftTopOrderless = calculateCurrentOrderless(top,y,left,x,cur_currentVec);
+        leftBottomOrderless = calculateCurrentOrderless(y,bottom,left,x,cur_currentVec);
+        rightTopOrderless = calculateCurrentOrderless(top,y,x,right,cur_currentVec);
+        rightBottomOrderless = calculateCurrentOrderless(y,bottom,x,right,cur_currentVec);
 
-    //sysnthesis the Distance factor with the orderless factor
-    float leftTopPart = leftTopDis * leftTopOrderless;
-    float leftBottomPart = leftBottomDis * leftBottomOrderless;
-    float rightTopPart = rightTopDis * rightTopOrderless;
-    float rightBottomPart = rightBottomDis * rightBottomOrderless;
+        //sysnthesis the Distance factor with the orderless factor
+        leftTopPart = leftTopDis * leftTopOrderless;
+        leftBottomPart = leftBottomDis * leftBottomOrderless;
+        rightTopPart = rightTopDis * rightTopOrderless;
+        rightBottomPart = rightBottomDis * rightBottomOrderless;
 
-    float allPart = leftTopPart + leftBottomPart + rightTopPart + rightBottomPart;
+        allPart = leftTopPart + leftBottomPart + rightTopPart + rightBottomPart;
 
-    //systhesis the final current data in position(x,y)
-    MVec2 currentData = _leftTopCurrentNode->getInnerData() * leftTopPart/allPart +\
-                        _leftBottomCurrentNode->getInnerData() * leftBottomPart/allPart + \
-                        _rightTopCurrentNode->getInnerData() * rightTopPart/allPart + \
-                        _rightBottomCurrentNode->getInnerData() * rightBottomPart/allPart;
+        //systhesis the final current data in position(x,y)
+        currentData = _leftTopCurrentNode->getInnerData() * leftTopPart/allPart +\
+                _leftBottomCurrentNode->getInnerData() * leftBottomPart/allPart + \
+                _rightTopCurrentNode->getInnerData() * rightTopPart/allPart + \
+                _rightBottomCurrentNode->getInnerData() * rightBottomPart/allPart;
+    }
 
 
     WindDataNode *_leftTopWindNode,*_leftBottomWindNode,*_rightTopWindNode,*_rightBottomWindNode;
@@ -100,25 +121,37 @@ DataNode DataMap::getData(int x, int y)
         }
     }
 
+    MVec2 windData(0,0);
+    if(cur_windVec->size() == 0){
+        for(int i = 0;i<inner_windNodeVec.size();i++){
+            WindDataNode cur_windNode = inner_windNodeVec[i];
+            windData = windData + cur_windNode.getInnerData();
+        }
+        windData = windData / inner_windNodeVec.size();
+    }
+    else{
+        leftTopOrderless = calculateWindOrderless(top,y,left,x,cur_windVec);
+        leftBottomOrderless = calculateWindOrderless(y,bottom,left,x,cur_windVec);
+        rightTopOrderless = calculateWindOrderless(top,y,x,right,cur_windVec);
+        rightBottomOrderless = calculateWindOrderless(y,bottom,x,right,cur_windVec);
+
+        //sysnthesis the Distance factor with the orderless factor
+        leftTopPart = leftTopDis * leftTopOrderless;
+        leftBottomPart = leftBottomDis * leftBottomOrderless;
+        rightTopPart = rightTopDis * rightTopOrderless;
+        rightBottomPart = rightBottomDis * rightBottomOrderless;
+
+        allPart = leftTopPart + leftBottomPart + rightTopPart + rightBottomPart;
+
+        //systhesis the final current data in position(x,y)
+        windData =_leftTopWindNode->getInnerData() * leftTopPart/allPart +\
+                _leftBottomWindNode->getInnerData() * leftBottomPart/allPart + \
+                _rightTopWindNode->getInnerData() * rightTopPart/allPart + \
+                _rightBottomWindNode->getInnerData() * rightBottomPart/allPart;
+
+    }
+
     //calculate the orderless of wind in the four ivory  corner
-    leftTopOrderless = calculateWindOrderless(top,y,left,x,cur_windVec);
-    leftBottomOrderless = calculateWindOrderless(y,bottom,left,x,cur_windVec);
-    rightTopOrderless = calculateWindOrderless(top,y,x,right,cur_windVec);
-    rightBottomOrderless = calculateWindOrderless(y,bottom,x,right,cur_windVec);
-
-    //sysnthesis the Distance factor with the orderless factor
-    leftTopPart = leftTopDis * leftTopOrderless;
-    leftBottomPart = leftBottomDis * leftBottomOrderless;
-    rightTopPart = rightTopDis * rightTopOrderless;
-    rightBottomPart = rightBottomDis * rightBottomOrderless;
-
-    allPart = leftTopPart + leftBottomPart + rightTopPart + rightBottomPart;
-
-    //systhesis the final current data in position(x,y)
-    MVec2 windData =_leftTopWindNode->getInnerData() * leftTopPart/allPart +\
-                    _leftBottomWindNode->getInnerData() * leftBottomPart/allPart + \
-                    _rightTopWindNode->getInnerData() * rightTopPart/allPart + \
-                    _rightBottomWindNode->getInnerData() * rightBottomPart/allPart;
 
     DataNode node(x,y);
     node.setInner_currentData(currentData);
@@ -157,10 +190,6 @@ void DataMap::updateData()
  */
 void DataMap::updateCurrentData()
 {
-    double B = 0, L = 0;
-    double x = 0, y = 0;
-    int i = 0;
-
     QFile file("current_20140717.txt");
 
     if(!file.open(QFile::ReadOnly)){
@@ -190,7 +219,32 @@ void DataMap::updateCurrentData()
  */
 void DataMap::updateWindData()
 {
+    QFile file("wind_20140308.txt");
 
+    if(!file.open(QFile::ReadOnly)){
+        qDebug()<<"open file error!";
+    }
+
+    while(!file.atEnd()){
+        QByteArray line =  file.readLine();
+        QString str(line);
+        if(str.length() > 20){
+            QStringList strList = str.split(' ');
+            qDebug()<<strList.at(0)<<" "<<strList.at(1);
+            QString lat = strList.at(0);
+            QString lon  = strList.at(1);
+            Position pos = calculateellipse2plane(lat.toFloat(),lon.toFloat());
+            WindDataNode node(pos.x,pos.y);
+
+            float angle = strList.at(2).toFloat();
+            float windSpeed = strList.at(3).toFloat();
+            float windDataHorizontal = cosf(angle) * windSpeed;
+            float windDataVertical = sinf(angle) * windSpeed;
+
+            node.setInnerData(MVec2(windDataHorizontal,windDataVertical));
+            inner_windNodeVec.push_back(node);
+        }
+    }
 }
 
 /*
