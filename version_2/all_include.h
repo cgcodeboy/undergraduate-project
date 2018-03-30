@@ -1,6 +1,8 @@
 #ifndef ALL_INCLUDE
 #define ALL_INCLUDE
 
+#include <math.h>
+
 ////////////////////
 /// \brief: this header is a user header, and it will inplement some user-defined struct
 ////////////////////
@@ -35,6 +37,31 @@ public:
     inline MVec2 operator /(const float &v) const{
         return MVec2(x / v,y /v);
     }
+
+//    inline MVec2 operator += (const MVec2 &vec) const{
+//        MVec2 _vec = const_cast<MVec2&>(vec);
+//        x += const_cast<float>(_vec.getX());
+//        y += const_cast<float>(_vec.getY());
+//        return *this;
+//    }
+
+//    inline MVec2 operator -= (const MVec2 &vec) const{
+//        x -= vec.getX();
+//        y -= vec.getY();
+//        return *this;
+//    }
+
+//    inline MVec2 operator *= (const float &v) const{
+//        x *= v;
+//        y *= v;
+//        return *this;
+//    }
+
+//    inline MVec2 operator /= (const float &v) const{
+//        x /= v;
+//        y /= v;
+//        return *this;
+//    }
 
     inline static float dot(const MVec2 &v1, const MVec2 &v2){
         return v1.getX() * v2.getX() + v1.getY() * v2.getY();

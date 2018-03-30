@@ -34,7 +34,7 @@ DataPair DataPipe::getData(int x, int y)
 {
     DataNode node = inner_map->getData(x,y);
 
-    DataPair pair(node.getInner_windSpeed(),node.getInner_curentSpeed());
+    DataPair pair(node.getInner_windData(),node.getInner_currentData());
 
     return pair;
 }

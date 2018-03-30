@@ -24,6 +24,8 @@
 #include <osg/AnimationPath>
 #include <osg/Vec2>
 #include <osg/Vec3>
+#include <osgGA/NodeTrackerManipulator>
+#include <osgGA/AnimationPathManipulator>
 
 namespace Ui {
 class MainWindow;
@@ -57,6 +59,7 @@ private slots:
     void on_parameter_TW_tabBarClicked(int index);
     void on_calculate_PB_clicked();
     void on_dropStart_BT_clicked();
+    void on_VR_BT_clicked();
 };
 
 #endif // MAINWINDOW_H

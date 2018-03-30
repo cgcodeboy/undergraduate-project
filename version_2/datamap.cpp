@@ -7,26 +7,154 @@ DataMap::DataMap()
 
     connect(&inner_timer,SIGNAL(timeout()),this,SLOT(updateData()));
     inner_timer.start(10000);
+    inner_maskHeight = 100;
+    inner_maskWidth = 100;
 }
 
-DataNode DataMap::getData(int x, int y) const
+/*
+ * brief: the function which can return the wind and current data in the position(x,y)
+ *
+ * output: it will return the a DataNode, which include the wind and current data in position(x,y)
+ */
+DataNode DataMap::getData(int x, int y)
 {
-//    for(unsigned i = 0;i<inner_nodeVec.size();i++){
-//        DataNode node = inner_nodeVec.at(i);
-//        if(node.getInner_y() == y&&node.getInner_x() == x){
-//            return node;
-//        }
-//    }
+    int top = y - inner_maskHeight;
+    int bottom = y + inner_maskHeight;
+    int left = x - inner_maskWidth;
+    int right = x + inner_maskWidth;
 
-    //Bilinear Interpolation to get the useful data
+    int leftTopDis = INT_MAX,leftBottomDis = INT_MAX,rightTopDis = INT_MAX,rightBottomDis = INT_MAX;
 
+    CurrentDataNode *_leftTopCurrentNode,*_leftBottomCurrentNode,*_rightTopCurrentNode,*_rightBottomCurrentNode;
+
+    vector<CurrentDataNode> *cur_currentVec = new vector<CurrentDataNode>;
+
+    //travel all the current node, get call the node in the mask and the four node which is the nearest to the
+    //postion(x,y) in the four corner
+    for(int i = 0;i<inner_currentNodeVec.size();i++){
+        CurrentDataNode cur_currentNode = inner_currentNodeVec[i];
+        float pos_x = cur_currentNode.getInner_x();
+        float pos_y = cur_currentNode.getInner_y();
+        if(pos_x > left && pos_x < right && pos_y > top && pos_y < bottom){
+            cur_currentVec->push_back(cur_currentNode);
+        }
+        if(pos_x<x&&pos_y<y && MVec2(x - pos_x,y - pos_y).length()<leftTopDis){
+            _leftTopCurrentNode = &cur_currentNode;
+        }
+        if(pos_x<x&&pos_y>y && MVec2(x - pos_x,y - pos_y).length()<leftBottomDis){
+            _leftBottomCurrentNode = &cur_currentNode;
+        }
+        if(pos_x>x&&pos_y<y && MVec2(x - pos_x,y - pos_y).length()<rightTopDis){
+            _rightTopCurrentNode = &cur_currentNode;
+        }
+        if(pos_x>x&&pos_y>y && MVec2(x - pos_x,y - pos_y).length()<rightBottomDis){
+            _rightBottomCurrentNode = &cur_currentNode;
+        }
+    }
+
+    //calculate the orderless of current in the four ivory  corner
+    float leftTopOrderless = calculateCurrentOrderless(top,y,left,x,cur_currentVec);
+    float leftBottomOrderless = calculateCurrentOrderless(y,bottom,left,x,cur_currentVec);
+    float rightTopOrderless = calculateCurrentOrderless(top,y,x,right,cur_currentVec);
+    float rightBottomOrderless = calculateCurrentOrderless(y,bottom,x,right,cur_currentVec);
+
+    //sysnthesis the Distance factor with the orderless factor
+    float leftTopPart = leftTopDis * leftTopOrderless;
+    float leftBottomPart = leftBottomDis * leftBottomOrderless;
+    float rightTopPart = rightTopDis * rightTopOrderless;
+    float rightBottomPart = rightBottomDis * rightBottomOrderless;
+
+    float allPart = leftTopPart + leftBottomPart + rightTopPart + rightBottomPart;
+
+    //systhesis the final current data in position(x,y)
+    MVec2 currentData = _leftTopCurrentNode->getInnerData() * leftTopPart/allPart +\
+                        _leftBottomCurrentNode->getInnerData() * leftBottomPart/allPart + \
+                        _rightTopCurrentNode->getInnerData() * rightTopPart/allPart + \
+                        _rightBottomCurrentNode->getInnerData() * rightBottomPart/allPart;
+
+
+    WindDataNode *_leftTopWindNode,*_leftBottomWindNode,*_rightTopWindNode,*_rightBottomWindNode;
+
+    vector<WindDataNode> *cur_windVec = new vector<WindDataNode>;
+
+    //travel all the wind node, get call the node in the mask and the four node which is the nearest to the
+    //postion(x,y) in the four corner
+    for(int i = 0;i<inner_windNodeVec.size();i++){
+        WindDataNode cur_windNode = inner_windNodeVec[i];
+        float pos_x = cur_windNode.getInner_x();
+        float pos_y = cur_windNode.getInner_y();
+        if(pos_x > left && pos_x < right && pos_y > top && pos_y < bottom){
+            cur_windVec->push_back(cur_windNode);
+        }
+        if(pos_x<x&&pos_y<y && MVec2(x - pos_x,y - pos_y).length()<leftTopDis){
+            _leftTopWindNode = &cur_windNode;
+        }
+        if(pos_x<x&&pos_y>y && MVec2(x - pos_x,y - pos_y).length()<leftBottomDis){
+            _leftBottomWindNode = &cur_windNode;
+        }
+        if(pos_x>x&&pos_y<y && MVec2(x - pos_x,y - pos_y).length()<rightTopDis){
+            _rightTopWindNode = &cur_windNode;
+        }
+        if(pos_x>x&&pos_y>y && MVec2(x - pos_x,y - pos_y).length()<rightBottomDis){
+            _rightBottomWindNode = &cur_windNode;
+        }
+    }
+
+    //calculate the orderless of wind in the four ivory  corner
+    leftTopOrderless = calculateWindOrderless(top,y,left,x,cur_windVec);
+    leftBottomOrderless = calculateWindOrderless(y,bottom,left,x,cur_windVec);
+    rightTopOrderless = calculateWindOrderless(top,y,x,right,cur_windVec);
+    rightBottomOrderless = calculateWindOrderless(y,bottom,x,right,cur_windVec);
+
+    //sysnthesis the Distance factor with the orderless factor
+    leftTopPart = leftTopDis * leftTopOrderless;
+    leftBottomPart = leftBottomDis * leftBottomOrderless;
+    rightTopPart = rightTopDis * rightTopOrderless;
+    rightBottomPart = rightBottomDis * rightBottomOrderless;
+
+    allPart = leftTopPart + leftBottomPart + rightTopPart + rightBottomPart;
+
+    //systhesis the final current data in position(x,y)
+    MVec2 windData =_leftTopWindNode->getInnerData() * leftTopPart/allPart +\
+                    _leftBottomWindNode->getInnerData() * leftBottomPart/allPart + \
+                    _rightTopWindNode->getInnerData() * rightTopPart/allPart + \
+                    _rightBottomWindNode->getInnerData() * rightBottomPart/allPart;
+
+    DataNode node(x,y);
+    node.setInner_currentData(currentData);
+    node.setInner_windData(windData);
+    return node;
 }
 
+/*
+ * brief: the setter of the mask
+ *
+ * input: it need a input two int value, which is the width and height of the mask
+ */
+void DataMap::setMaskSize(int width, int height)
+{
+    inner_maskWidth = width;
+    inner_maskHeight = height;
+}
+
+/*
+ * brief: a update function
+ *
+ * no input and output
+ *
+ * in this function, current data and wind data will be updated
+ */
 void DataMap::updateData()
 {
-
+    updateCurrentData();
+    updateWindData();
 }
 
+/*
+ * brief: the update function of the current data
+ *
+ * input: it need to read a txt file, in this file there are all the current data but need to sort
+ */
 void DataMap::updateCurrentData()
 {
     double B = 0, L = 0;
@@ -48,18 +176,30 @@ void DataMap::updateCurrentData()
             QString lat = strList.at(1);
             QString lon  = strList.at(2);
             Position pos = calculateellipse2plane(lat.toFloat(),lon.toFloat());
-            DataNode node(pos.x,pos.y);
-            node.setInner_curentSpeed(MVec2(QString(strList.at(3)).toFloat(),QString(strList.at(4)).toFloat()));
-            inner_nodeVec.push_back(node);
+            CurrentDataNode node(pos.x,pos.y);
+            node.setInnerData(MVec2(QString(strList.at(3)).toFloat(),QString(strList.at(4)).toFloat()));
+            inner_currentNodeVec.push_back(node);
         }
     }
 }
 
+/*
+ * brief: the update function of the wind data
+ *
+ * input: it need to read a txt file, in this file there are all the wind data but need to sort
+ */
 void DataMap::updateWindData()
 {
 
 }
 
+/*
+ * brief: the function used to calculate the postion correspond to the latitude and longtitude
+ *
+ * input: it need to input two double value of latitude and longtitude
+ *
+ * output: it will return a struct(Position) of x and y in the descrate coordinate
+ */
 Position DataMap::calculateellipse2plane(double B, double L)
 {
     double l = 0, Lo = 0, a0 = 0, a3 = 0, a4 = 0, a5 = 0, a6 = 0, n = 0, c = 0;
@@ -128,25 +268,84 @@ double DataMap::dms2D(double Dms)
     return D;
 }
 
-
-MVec2 DataNode::getInner_windSpeed() const
+/*
+ * brief: the function used for calculating the current orderless in the four corner
+ *
+ * input: it need to input four int value of a corner and the current node vector which is in the mask
+ *
+ * output: it will return the orderless value of current
+ */
+float DataMap::calculateCurrentOrderless(int top, int bottom, int left, int right, vector<CurrentDataNode> *dataVec)
 {
-    return inner_windSpeed;
+    MVec2 sumVec(0,0);
+    int count = 0;
+    for(int i = 0;i<dataVec->size();i++){
+        CurrentDataNode node = dataVec->at(i);
+        int x = node.getInner_x();
+        int y = node.getInner_y();
+        if(x>left&&x<right&&y>top&&y<bottom){
+            sumVec = sumVec + node.getInnerData();
+            count ++;
+        }
+    }
+    if(count !=0){
+        sumVec = sumVec / count;
+    }
+
+    float orderless = 0;
+    float sumLength = sumVec.length();
+    for(int i = 0;i<dataVec->size();i++){
+        CurrentDataNode node = dataVec->at(i);
+        int x = node.getInner_x();
+        int y = node.getInner_y();
+        if(x>left&&x<right&&y>top&&y<bottom){
+            MVec2 vecCur = node.getInnerData();
+            float crossDot = MVec2::dot(vecCur,sumVec);
+            orderless += acosf(crossDot /(vecCur.length()* sumLength));
+        }
+    }
+
+    return orderless /= count;
 }
 
-void DataNode::setInner_windSpeed(const MVec2 &value)
+/*
+ * brief: the function used for calculating the wind orderless in the four corner
+ *
+ * input: it need to input four int value of a corner and the wind node vector which is in the mask
+ *
+ * output: it will return the orderless value of wind
+ */
+float DataMap::calculateWindOrderless(int top, int bottom, int left, int right, vector<WindDataNode> *dataVec)
 {
-    inner_windSpeed = value;
-}
+    MVec2 sumVec(0,0);
+    int count = 0;
+    for(int i = 0;i<dataVec->size();i++){
+        WindDataNode node = dataVec->at(i);
+        int x = node.getInner_x();
+        int y = node.getInner_y();
+        if(x>left&&x<right&&y>top&&y<bottom){
+            sumVec = sumVec + node.getInnerData();
+            count ++;
+        }
+    }
+    if(count !=0){
+        sumVec = sumVec / count;
+    }
 
-MVec2 DataNode::getInner_curentSpeed() const
-{
-    return inner_curentSpeed;
-}
+    float orderless = 0;
+    float sumLength = sumVec.length();
+    for(int i = 0;i<dataVec->size();i++){
+        WindDataNode node = dataVec->at(i);
+        int x = node.getInner_x();
+        int y = node.getInner_y();
+        if(x>left&&x<right&&y>top&&y<bottom){
+            MVec2 vecCur = node.getInnerData();
+            float crossDot = MVec2::dot(vecCur,sumVec);
+            orderless += acosf(crossDot /(vecCur.length()* sumLength));
+        }
+    }
 
-void DataNode::setInner_curentSpeed(const MVec2 &value)
-{
-    inner_curentSpeed = value;
+    return orderless /= count;
 }
 
 int DataNode::getInner_y() const
@@ -157,4 +356,54 @@ int DataNode::getInner_y() const
 int DataNode::getInner_x() const
 {
     return inner_x;
+}
+
+MVec2 DataNode::getInner_windData() const
+{
+    return inner_windData;
+}
+
+void DataNode::setInner_windData(const MVec2 &value)
+{
+    inner_windData = value;
+}
+
+MVec2 DataNode::getInner_currentData() const
+{
+    return inner_currentData;
+}
+
+void DataNode::setInner_currentData(const MVec2 &value)
+{
+    inner_currentData = value;
+}
+
+CurrentDataNode::CurrentDataNode(int _x, int _y):DataNode(_x,_y)
+{
+
+}
+
+MVec2 CurrentDataNode::getInnerData()
+{
+    return getInner_currentData();
+}
+
+void CurrentDataNode::setInnerData(const MVec2 &value)
+{
+    setInner_currentData(value);
+}
+
+WindDataNode::WindDataNode(int _x, int _y):DataNode(_x,_y)
+{
+
+}
+
+void WindDataNode::setInnerData(const MVec2 &value)
+{
+    setInner_windData(value);
+}
+
+MVec2 WindDataNode::getInnerData()
+{
+    return getInner_windData();
 }

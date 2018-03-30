@@ -120,7 +120,7 @@ void ViewWidget::initScene()
     cubeMap->setImage(osg::TextureCubeMap::NEGATIVE_Z,osgDB::readImageFile("resources/textures/sky_clear/south.png"));
     cubeMap->setImage(osg::TextureCubeMap::POSITIVE_Z,osgDB::readImageFile("resources/textures/sky_clear/north.png"));
     //天空盒
-    osg::ref_ptr<SkyDome> sky = new SkyDome(1900,16,16,cubeMap.get());
+    osg::ref_ptr<SkyDome> sky = new SkyDome(2000,16,16,cubeMap.get());
 //    sky->setNodeMask(scene->getReflectedSceneMask() | scene->getNormalSceneMask());
     osg::MatrixTransform * mat =new osg::MatrixTransform;
     mat->setDataVariance(osg::Object::DYNAMIC);
@@ -267,9 +267,9 @@ void ViewWidget::setDropAnimationPath(osg::ref_ptr<osg::AnimationPath> path)
             path->setLoopMode(osg::AnimationPath::NO_LOOPING);
             osg::ref_ptr<osg::Node> airPlaneMat = root->getChild(i);
             airPlaneMat->setUpdateCallback(callback);
-            osgGA::TrackballManipulator *tb = dynamic_cast<osgGA::TrackballManipulator*>( this->getCameraManipulator());
-            tb->setHomePosition(osg::Vec3(5000,5000,50),osg::Vec3(4500,4500,0),osg::Z_AXIS);
-            setCameraManipulator(tb);
+//            osgGA::TrackballManipulator *tb = dynamic_cast<osgGA::TrackballManipulator*>( this->getCameraManipulator());
+//            tb->setHomePosition(osg::Vec3(5000,5000,50),osg::Vec3(4500,4500,0),osg::Z_AXIS);
+//            setCameraManipulator(tb);
         }
     }
 }
