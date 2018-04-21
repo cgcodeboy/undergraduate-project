@@ -4,34 +4,140 @@
 /*
  *  brief: a function used to add a HUD to the osg scene
  */
-//osg::ref_ptr<osg::Camera> ViewWidget::createHUD()
-//{
-//    osg::ref_ptr<osg::Camera> camera = new osg::Camera;
-//    camera->setClearMask(GL_DEPTH_BUFFER_BIT);
-//    camera->setViewMatrix(osg::Matrix::identity());
-//    camera->setRenderOrder(osg::Camera::POST_RENDER);//最后渲染
-//    camera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
-//    camera->setProjectionMatrixAsOrtho2D(0,640,0,480);
-//    camera->setAllowEventFocus(false);
+osg::ref_ptr<osg::Camera> ViewWidget::createHUD()
+{
+    osg::ref_ptr<osg::Camera> camera = new osg::Camera;
+    camera->setClearMask(GL_DEPTH_BUFFER_BIT);
+    camera->setViewMatrix(osg::Matrix::identity());
+    camera->setRenderOrder(osg::Camera::POST_RENDER);//最后渲染
+    camera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
+    camera->setProjectionMatrixAsOrtho2D(0,640,0,480);
+    camera->setAllowEventFocus(false);
 
-//    osg::ref_ptr<osg::Geode> geode = new osg::Geode;
+    osg::ref_ptr<osg::Geode> geode = new osg::Geode;
 
-//    osg::ref_ptr<osg::Geometry> plane = new osg::Geometry;
-//    osg::ref_ptr<osg::Vec3Array> vertex = new osg::Vec3Array;
-//    vertex->push_back(osg::Vec3(540,400,0));
-//    vertex->push_back(osg::Vec3(640,400,0));
-//    vertex->push_back(osg::Vec3(640,480,0));
-//    vertex->push_back(osg::Vec3(540,480,0));
-//    plane->setVertexArray(vertex.get());
-//    plane->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS,0,vertex->size()));
-//    geode->addDrawable(plane);
+    osg::ref_ptr<osg::Geometry> plane = new osg::Geometry;
+    osg::ref_ptr<osg::Vec3Array> vertex = new osg::Vec3Array;
+    vertex->push_back(osg::Vec3(490,330,0));
+    vertex->push_back(osg::Vec3(640,330,0));
+    vertex->push_back(osg::Vec3(640,480,0));
+    vertex->push_back(osg::Vec3(490,480,0));
+    plane->setVertexArray(vertex.get());
 
-//    geode->getOrCreateStateSet()->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
-//    geode->getOrCreateStateSet()->setMode(GL_BLEND,osg::StateAttribute::OFF);
-//    camera->getOrCreateStateSet()->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
-//    camera->addChild(geode.get());
-//    return camera;
-//}
+    osg::ref_ptr<osg::Vec4Array> color = new osg::Vec4Array;
+    color->push_back(osg::Vec4(0.5f,0.5f,0.5f,1.0f));
+    plane->setColorArray(color.get());
+    plane->setColorBinding(osg::Geometry::BIND_OVERALL);
+
+    osg::ref_ptr<osg::Vec3Array> normal = new osg::Vec3Array;
+    normal->push_back(osg::Vec3(0,0,1.0f));
+    plane->setNormalArray(normal.get());
+    plane->setNormalBinding(osg::Geometry::BIND_OVERALL);
+
+    plane->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::POLYGON,0,vertex->size()));
+    geode->addDrawable(plane);
+
+    if(m_driftPath.size()!=0){
+        vector<osg::Vec2> point_Vec;
+
+        osg::ref_ptr<osg::Geometry> line = new osg::Geometry;
+        osg::Vec2 start = m_driftPath.at(0);
+        for(int i = 0;i<m_driftPath.size();i++){
+            point_Vec.push_back(m_driftPath.at(i) - start);
+        }
+
+        int xMIN = INT_MAX,xMAX = INT_MIN,yMIN = INT_MAX,yMAX = INT_MIN;
+        for(int i = 0;i<point_Vec.size();i++){
+            osg::Vec2 cur = point_Vec.at(i);
+            if(cur.x()<xMIN){
+                xMIN = cur.x();
+            }
+            if(cur.x()>xMAX){
+                xMAX = cur.x();
+            }
+            if(cur.y()<yMIN){
+                yMIN = cur.y();
+            }
+            if(cur.y()>yMAX){
+                yMAX = cur.y();
+            }
+        }
+
+        float cur_width = abs(xMIN)>abs(xMAX)?abs(xMIN):abs(xMAX);
+        float cur_height = abs(yMIN)>abs(yMAX)?abs(yMIN):abs(yMAX);
+        float max = cur_width>cur_height?cur_width:cur_height;
+
+        osg::ref_ptr<osg::Vec3Array> vertex = new osg::Vec3Array;
+        for(int i = 0;i<point_Vec.size();i++){
+            osg::Vec2 cur = point_Vec.at(i);
+            vertex->push_back(osg::Vec3(565+75*cur.x()/max,405+75*cur.y()/max,0));
+        }
+        line->setVertexArray(vertex.get());
+        line->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP,0,vertex->size()));
+
+        osg::ref_ptr<osg::Vec4Array> color = new osg::Vec4Array;
+        color->push_back(osg::Vec4(0,0,0,1));
+        line->setColorArray(color);
+        line->setColorBinding(osg::Geometry::BIND_OVERALL);
+
+        geode->addDrawable(line);
+    }
+
+    geode->getOrCreateStateSet()->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
+    geode->getOrCreateStateSet()->setMode(GL_DEPTH_TEST,osg::StateAttribute::OFF);
+    camera->addChild(geode.get());
+    return camera;
+}
+
+osg::ref_ptr<osg::Geode> ViewWidget::createRouteLine()
+{
+    if(m_driftPath.size()>1){
+        osg::ref_ptr<osg::Geode> line = new osg::Geode;
+
+        osg::ref_ptr<osg::Geometry> geometry = new osg::Geometry;
+
+        osg::ref_ptr<osg::Vec3Array> vertex = new osg::Vec3Array;
+        osg::Vec2 start = m_driftPath.at(0);
+
+        float height = scene->getOceanSurfaceHeight();
+        for(int i = 0;i<m_driftPath.size();i++){
+            osg::Vec2 cur = m_driftPath.at(i);
+            vertex->push_back(osg::Vec3(cur-start,height));
+        }
+
+        geometry->setVertexArray(vertex);
+        geometry->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP,0,vertex->size()));
+
+        line->addDrawable(geometry);
+        return line;
+    }
+
+    return NULL;
+}
+
+void ViewWidget::addRouteLine(bool value)
+{
+    if(value){
+        osg::ref_ptr<osg::Group> root = new osg::Group;
+        osg::ref_ptr<osg::Node> group = getSceneData();
+        group->setName("scene");
+        root->addChild(group);
+        osg::ref_ptr<osg::Geode> line = createRouteLine();
+        if(line){
+            root->addChild(line);
+        }
+        setSceneData(root);
+    }
+    else{
+        osg::ref_ptr<osg::Group> root = getSceneData()->asGroup();
+        for(int i = 0;i<root->getNumChildren();i++){
+            osg::ref_ptr<osg::Node> cur = root->getChild(i);
+            if(cur->getName() == "scene"){
+                setSceneData(cur);
+            }
+        }
+    }
+}
 
 /*
  *  brief: the construct function
@@ -40,8 +146,8 @@
  */
 ViewWidget::ViewWidget(QWidget *parent):QWidget(parent)
 {
-//    root = new osg::Group;
-//    //创建图形上下文特性
+    //    root = new osg::Group;
+    //    //创建图形上下文特性
     setWindowFlags(Qt::CustomizeWindowHint|Qt::FramelessWindowHint);
     osg::DisplaySettings* ds = osg::DisplaySettings::instance().get();
     traits = new osg::GraphicsContext::Traits;
@@ -94,6 +200,11 @@ void ViewWidget::resizeEvent(QResizeEvent *event)
     getCamera()->setViewport(new osg::Viewport(0,0,traits->width,traits->height));
 }
 
+void ViewWidget::setInner_type(const SCENE_TYPE &value)
+{
+    inner_type = value;
+}
+
 /*
  * brief: the initialize function
  *          in this function, we will initialize the ocean scene, the skybox
@@ -132,6 +243,7 @@ void ViewWidget::initScene()
     //雾效和反射
     scene->setAboveWaterFog(0.0012,osg::Vec4(0.67,0.87,0.97,1.0));
     scene->enableReflections(true);
+    scene->enableRefractions(true);
     surface->setEnvironmentMap(cubeMap.get());
 
     //水花
@@ -142,21 +254,16 @@ void ViewWidget::initScene()
     addEventHandler(surface->getEventHandler());
     addEventHandler(scene->getEventHandler());
 
-    setSceneData(scene);
-
-    //    root->addChild(createHUD());
+//    setSceneData(scene);
 }
-
-//void ViewWidget::addNode(osg::ref_ptr<osg::Node> node)
-//{
-//    root->addChild(node.get());
-//}
 
 /*
  * brief: a simulation scene for airplane drop from the sky
  */
 void ViewWidget::addDropScene()
 {
+    setInner_type(DROP);
+    initScene();
     osg::ref_ptr<osg::Node> airplane = osgDB::readNodeFile("resources/tian.obj");
     osg::ref_ptr<osg::MatrixTransform> airplaneMat = new osg::MatrixTransform;
     airplaneMat->setName("airplanemat");
@@ -173,25 +280,19 @@ void ViewWidget::addDropScene()
  */
 void ViewWidget::addComplexDriftScene()
 {
+    setInner_type(COMPLEXDRIFT);
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
-    osg::ref_ptr<osg::Group> root = scene->asGroup();
-    for(int i = 0;i<root->getNumChildren();i++)
-    {
-        if(root->getChild(i)->getName() == "driftor_group")
-        {
-            root->removeChild(i);
-        }
-    }
+    initScene();
     osg::ref_ptr<osg::Group> driftorGroup = new osg::Group;
     driftorGroup->setName("driftor_group");
-    for(int i = 0;i<15;i++)
+    for(int i = 1;i<=15;i++)
     {
         osg::ref_ptr<osg::MatrixTransform> driftMat = new osg::MatrixTransform;
         int x = qrand()%500,y = qrand()%500;
-        driftMat->setMatrix(osg::Matrix::scale(0.01,0.01,0.01)*osg::Matrix::translate(x,y,0));
+        driftMat->setMatrix(osg::Matrix::scale(0.005,0.005,0.005)*osg::Matrix::translate(x,y,0));
         osg::ref_ptr<osg::Node> driftPart = osgDB::readNodeFile(QString("resources/air/part_%1.obj").arg(i).toStdString());
         driftMat->addChild(driftPart);
-        driftMat->setUpdateCallback(new DriftCallback(scene));
+        driftMat->setUpdateCallback(new DriftCallback(scene,"airplane"));
         driftorGroup->addChild(driftMat);
     }
     scene->addChild(driftorGroup);
@@ -204,21 +305,15 @@ void ViewWidget::addComplexDriftScene()
  */
 void ViewWidget::addSimpleDriftScene()
 {
-    osg::ref_ptr<osg::Group> root = scene->asGroup();
-    for(int i = 0;i<root->getNumChildren();i++)
-    {
-        if(root->getChild(i)->getName() == "driftor_group")
-        {
-            root->removeChild(i);
-        }
-    }
+    setInner_type(SIMPLEDRIFT);
+    initScene();
     osg::ref_ptr<osg::Group> driftorGroup = new osg::Group;
     driftorGroup->setName("driftor_group");
     osg::ref_ptr<osg::MatrixTransform> driftMat = new osg::MatrixTransform;
-    driftMat->setMatrix(osg::Matrix::scale(0.01,0.01,0.01)*osg::Matrix::translate(0,0,0));
-    osg::ref_ptr<osg::Node> driftPart = osgDB::readNodeFile("resources/air/part_1.obj");
+    driftMat->setMatrix(osg::Matrix::scale(0.5,0.5,0.5)*osg::Matrix::translate(0,0,0));
+    osg::ref_ptr<osg::Node> driftPart = osgDB::readNodeFile("resources/driftor.3DS");
     driftMat->addChild(driftPart);
-    driftMat->setUpdateCallback(new DriftCallback(scene));
+    driftMat->setUpdateCallback(new DriftCallback(scene,"driftor"));
     driftorGroup->addChild(driftMat);
     scene->addChild(driftorGroup);
     setSceneData(scene);
@@ -233,22 +328,67 @@ osg::ref_ptr<osgOcean::FFTOceanSurface> ViewWidget::getOceanSurface()
     return this->surface;
 }
 
-void ViewWidget::setSimpleDriftAnimationPath(osg::ref_ptr<osg::AnimationPath> path)
+void ViewWidget::setDriftPathVec(vector<osg::Vec2> path_Vec,int updateFeq,SCENE_TYPE type)
+{
+    m_driftPath = path_Vec;
+    setDriftAnimationPath(path_Vec,updateFeq,type);
+}
+
+void ViewWidget::setDropPathVec(vector<osg::Vec3> path_Vec)
+{
+    osg::ref_ptr<osg::AnimationPath> path = generateDropAnimationPath(path_Vec);
+    setDropAnimationPath(path);
+}
+
+void ViewWidget::addHUD(bool value)
+{
+    if(value){
+        osg::ref_ptr<osg::Group> root = new osg::Group;
+        osg::ref_ptr<osg::Node> group = getSceneData();
+        group->setName("scene");
+        root->addChild(group);
+        osg::ref_ptr<osg::Camera> cameraHUD = createHUD();
+        cameraHUD->setName("HUD");
+        root->addChild(cameraHUD);
+        setSceneData(root);
+    }
+    else{
+        osg::ref_ptr<osg::Group> root = getSceneData()->asGroup();
+        for(int i = 0;i<root->getNumChildren();i++){
+            osg::ref_ptr<osg::Node> cur = root->getChild(i);
+            if(cur->getName() == "scene"){
+                setSceneData(cur);
+            }
+        }
+    }
+}
+
+void ViewWidget::setDriftAnimationPath(vector<osg::Vec2> path_Vec,int updateFeq,SCENE_TYPE type)
 {
     osg::ref_ptr<osg::Group> root = scene->asGroup();
     for(int i = 0;i<root->getNumChildren();i++)
     {
         if(root->getChild(i)->getName() == "driftor_group")
         {
-            qDebug()<<"haha";
             osg::ref_ptr<osg::Group> drift_Group = root->getChild(i)->asGroup();
 
-            path->setLoopMode(osg::AnimationPath::NO_LOOPING);
-            osg::ref_ptr<osg::AnimationPathCallback> animationPathCallback = new osg::AnimationPathCallback;
-            animationPathCallback->setAnimationPath(path);
+            for(int j = 0;j<drift_Group->getNumChildren();j++){
+                osg::ref_ptr<osg::Node> cur = drift_Group->getChild(j);
 
-            osg::ref_ptr<osg::Node> matTrans = drift_Group->getChild(0);
-            matTrans->setUpdateCallback(animationPathCallback);
+                osg::ref_ptr<osg::AnimationPathCallback> animationPathCallback = new osg::AnimationPathCallback;
+
+                osg::MatrixTransform* matrixTran = dynamic_cast<osg::MatrixTransform*>(cur->asTransform());
+                if(matrixTran){
+                    osg::Matrix  matrix = matrixTran->getMatrix();//osg::computeLocalToWorld(nv.getNodePath());
+                    osg::Vec3d pos = matrix.getTrans();
+
+                    osg::ref_ptr<osg::AnimationPath> path = generateDriftAnimationPath(path_Vec,pos,updateFeq,type);
+
+                    animationPathCallback->setAnimationPath(path);
+
+                    matrixTran->setUpdateCallback(animationPathCallback);
+                }
+            }
         }
     }
 }
@@ -260,17 +400,61 @@ void ViewWidget::setDropAnimationPath(osg::ref_ptr<osg::AnimationPath> path)
     {
         if(root->getChild(i)->getName() == "airplanemat")
         {
-            qDebug()<<"haha";
             osg::ref_ptr<osg::AnimationPathCallback> callback = new osg::AnimationPathCallback;
             callback->setAnimationPath(path);
 
             path->setLoopMode(osg::AnimationPath::NO_LOOPING);
             osg::ref_ptr<osg::Node> airPlaneMat = root->getChild(i);
             airPlaneMat->setUpdateCallback(callback);
-//            osgGA::TrackballManipulator *tb = dynamic_cast<osgGA::TrackballManipulator*>( this->getCameraManipulator());
-//            tb->setHomePosition(osg::Vec3(5000,5000,50),osg::Vec3(4500,4500,0),osg::Z_AXIS);
-//            setCameraManipulator(tb);
+            //            osgGA::TrackballManipulator *tb = dynamic_cast<osgGA::TrackballManipulator*>( this->getCameraManipulator());
+            //            tb->setHomePosition(osg::Vec3(5000,5000,50),osg::Vec3(4500,4500,0),osg::Z_AXIS);
+            //            setCameraManipulator(tb);
         }
     }
+}
+
+osg::ref_ptr<osg::AnimationPath> ViewWidget::generateDriftAnimationPath(vector<osg::Vec2> path_Vec,osg::Vec3 start,int updateFrequcency,SCENE_TYPE type)
+{
+    osg::ref_ptr<osg::AnimationPath> path = new osg::AnimationPath;
+
+    path->setLoopMode(osg::AnimationPath::LOOP);
+
+    osg::Vec2 initPos = path_Vec.at(0);
+
+    for(int i = 0;i<path_Vec.size();i++)
+    {
+        osg::Vec2 cur = path_Vec[i];
+
+        osg::Vec3f pos(cur-initPos,0);
+        osg::AnimationPath::ControlPoint *point = new osg::AnimationPath::ControlPoint;
+        if(type == SIMPLEDRIFT){
+            point->setScale(osg::Vec3(0.5,0.5,0.5));
+        }else{
+            point->setScale(osg::Vec3(0.005,0.005,0.005));
+        }
+        point->setPosition(start+pos);
+        path->insert(i*updateFrequcency,*point);
+        delete point;
+    }
+
+    return path;
+}
+
+osg::ref_ptr<osg::AnimationPath> ViewWidget::generateDropAnimationPath(vector<osg::Vec3> path_Vec)
+{
+    osg::ref_ptr<osg::AnimationPath> path = new osg::AnimationPath;
+
+    for(int i = 0;i<path_Vec.size();i++)
+    {
+        osg::Vec3 cur = path_Vec[i];
+
+        osg::AnimationPath::ControlPoint *point = new osg::AnimationPath::ControlPoint;
+        point->setPosition(osg::Vec3f(cur.x(),cur.y(),cur.z()));
+        point->setScale(osg::Vec3f(0.005,0.005,0.005));
+        path->insert(i,*point);
+        delete point;
+    }
+
+    return path;
 }
 

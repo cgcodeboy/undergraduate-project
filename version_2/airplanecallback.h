@@ -23,23 +23,6 @@ public:
 
                 mat->setMatrix(osg::Matrix::scale(0.005,0.005,0.005)*osg::Matrix::translate(pos[0],pos[1]+translate_offset,100));
 
-
-                //                osg::Vec3f normal;
-                //                float height = _scene->getOceanSurfaceHeightAt(pos[0],pos[1],&normal);
-
-                //                static float a = 0;
-                //                matrix.makeTranslate(osg::Vec3(pos[0]+cosf(a),pos[1]+sinf(a),height));
-
-                //                osg::Matrixf rot;
-                //                rot.makeIdentity();
-                //                rot.makeRotate(normal.x(),osg::X_AXIS,
-                //                               normal.y(),osg::Y_AXIS,
-                //                               a,osg::Z_AXIS);
-
-                //                a+=0.005;
-                //                matrix = rot * matrix;
-                //                mat->setMatrix(matrix);
-
             }
         }
     }

@@ -35,7 +35,7 @@ public:
 
     void setDataMap(DataMap *map);
 
-    DataPair getData(int x,int y);
+    DataPair getData(const QDate &date, int x, int y);
 
 private:
     DataMap *inner_map;

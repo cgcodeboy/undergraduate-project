@@ -20,6 +20,9 @@
 #include "cameracallback.h"
 #include "airplanecallback.h"
 #include "driftcallback.h"
+#include "followadaptor.h"
+
+#include <vector>
 
 /**
 * osg include file
@@ -34,6 +37,16 @@
 #include <osgViewer/ViewerEventHandlers>
 #include <osgGA/TrackballManipulator>
 #include <osg/Version>
+#include <osgGA/NodeTrackerManipulator>
+#include <osgGA/AnimationPathManipulator>
+
+using namespace std;
+
+enum SCENE_TYPE{
+    SIMPLEDRIFT,
+    COMPLEXDRIFT,
+    DROP
+};
 
 class ViewWidget:public QWidget,public osgViewer::Viewer
 {
@@ -41,8 +54,10 @@ class ViewWidget:public QWidget,public osgViewer::Viewer
 public:
     explicit ViewWidget(QWidget *parent = 0);
 
-    //    osg::ref_ptr<osg::Camera> createHUD();
-    //    void addNode(osg::ref_ptr<osg::Node> node);
+    osg::ref_ptr<osg::Camera> createHUD();
+
+    osg::ref_ptr<osg::Geode> createRouteLine();
+
     void initScene();
 
     void addDropScene();
@@ -53,9 +68,12 @@ public:
 
     osg::ref_ptr<osgOcean::FFTOceanSurface> getOceanSurface();
 
-    void setSimpleDriftAnimationPath(osg::ref_ptr<osg::AnimationPath> path);
-    void setDropAnimationPath(osg::ref_ptr<osg::AnimationPath> path);
+    void setDriftPathVec(vector<osg::Vec2> path_Vec, int updateFeq, SCENE_TYPE type);
+    void setDropPathVec(vector<osg::Vec3> path_Vec);
 
+    void addHUD(bool value);
+
+    void addRouteLine(bool value);
 private:
     osg::ref_ptr<osgOcean::OceanScene> scene;
     osg::ref_ptr<osgOcean::FFTOceanSurface> surface;
@@ -64,7 +82,19 @@ private:
     virtual void paintEvent(QPaintEvent *event);
     virtual void resizeEvent(QResizeEvent *event);
 
+    void setInner_type(const SCENE_TYPE &value);
+
+    osg::ref_ptr<osg::AnimationPath> generateDriftAnimationPath(vector<osg::Vec2> path_Vec,osg::Vec3 start, int updateFrequcency, SCENE_TYPE type);
+    osg::ref_ptr<osg::AnimationPath> generateDropAnimationPath(vector<osg::Vec3> path_Vec);
+
+    void setDriftAnimationPath(vector<osg::Vec2> path_Vec, int updateFeq, SCENE_TYPE type);
+    void setDropAnimationPath(osg::ref_ptr<osg::AnimationPath> path);
+
     osg::ref_ptr<osg::Group> root;
+
+    vector<osg::Vec2> m_driftPath;
+
+    SCENE_TYPE inner_type;
 };
 
 #endif // VIEWWIDGET_H

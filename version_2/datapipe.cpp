@@ -30,9 +30,9 @@ void DataPair::setInner_currentVec(const MVec2 &value)
     inner_currentVec = value;
 }
 
-DataPair DataPipe::getData(int x, int y)
+DataPair DataPipe::getData(const QDate &date , int x, int y)
 {
-    DataNode node = inner_map->getData(x,y);
+    DataNode node = inner_map->getData(date,x,y);
 
     DataPair pair(node.getInner_windData(),node.getInner_currentData());
 

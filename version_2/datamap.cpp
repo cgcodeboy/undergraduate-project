@@ -5,10 +5,8 @@ DataMap::DataMap()
     inner_standardWind = new MVec2(rand()%10-5,rand()%10-5);
     inner_standardCurrent = new MVec2(rand()%10-5,rand()%10-5);
 
-    connect(&inner_timer,SIGNAL(timeout()),this,SLOT(updateData()));
-    inner_timer.start(10000);
-    inner_maskHeight = 100;
-    inner_maskWidth = 100;
+    inner_maskHeight = 200000;
+    inner_maskWidth = 200000;
 }
 
 /*
@@ -16,8 +14,9 @@ DataMap::DataMap()
  *
  * output: it will return the a DataNode, which include the wind and current data in position(x,y)
  */
-DataNode DataMap::getData(int x, int y)
+DataNode DataMap::getData(const QDate &date, int x, int y)
 {
+    updateTrigger(date);
     int top = y - inner_maskHeight;
     int bottom = y + inner_maskHeight;
     int left = x - inner_maskWidth;
@@ -25,7 +24,7 @@ DataNode DataMap::getData(int x, int y)
 
     int leftTopDis = INT_MAX,leftBottomDis = INT_MAX,rightTopDis = INT_MAX,rightBottomDis = INT_MAX;
 
-    CurrentDataNode *_leftTopCurrentNode,*_leftBottomCurrentNode,*_rightTopCurrentNode,*_rightBottomCurrentNode;
+    CurrentDataNode *_leftTopCurrentNode = nullptr,*_leftBottomCurrentNode = nullptr,*_rightTopCurrentNode = nullptr,*_rightBottomCurrentNode = nullptr;
 
     float leftTopOrderless;
     float leftBottomOrderless;
@@ -46,23 +45,26 @@ DataNode DataMap::getData(int x, int y)
         CurrentDataNode cur_currentNode = inner_currentNodeVec[i];
         float pos_x = cur_currentNode.getInner_x();
         float pos_y = cur_currentNode.getInner_y();
-        if(pos_x > left && pos_x < right && pos_y > top && pos_y < bottom){
+        if(pos_x > left && pos_x < right && pos_y > top && pos_y < bottom){          
             cur_currentVec->push_back(cur_currentNode);
         }
         if(pos_x<x&&pos_y<y && MVec2(x - pos_x,y - pos_y).length()<leftTopDis){
             _leftTopCurrentNode = &cur_currentNode;
+            leftTopDis = MVec2(x - pos_x,y - pos_y).length();
         }
         if(pos_x<x&&pos_y>y && MVec2(x - pos_x,y - pos_y).length()<leftBottomDis){
             _leftBottomCurrentNode = &cur_currentNode;
+            leftBottomDis = MVec2(x - pos_x,y - pos_y).length();
         }
         if(pos_x>x&&pos_y<y && MVec2(x - pos_x,y - pos_y).length()<rightTopDis){
             _rightTopCurrentNode = &cur_currentNode;
+            rightTopDis = MVec2(x - pos_x,y - pos_y).length();
         }
         if(pos_x>x&&pos_y>y && MVec2(x - pos_x,y - pos_y).length()<rightBottomDis){
             _rightBottomCurrentNode = &cur_currentNode;
+            rightBottomDis =  MVec2(x - pos_x,y - pos_y).length();
         }
     }
-
     MVec2 currentData(0,0);
     if(cur_currentVec->size() == 0){
         for(int i = 0;i<inner_currentNodeVec.size();i++){
@@ -87,15 +89,22 @@ DataNode DataMap::getData(int x, int y)
         allPart = leftTopPart + leftBottomPart + rightTopPart + rightBottomPart;
 
         //systhesis the final current data in position(x,y)
-        currentData = _leftTopCurrentNode->getInnerData() * leftTopPart/allPart +\
-                _leftBottomCurrentNode->getInnerData() * leftBottomPart/allPart + \
-                _rightTopCurrentNode->getInnerData() * rightTopPart/allPart + \
-                _rightBottomCurrentNode->getInnerData() * rightBottomPart/allPart;
+        if(_leftTopCurrentNode){
+            currentData = currentData + _leftTopCurrentNode->getInnerData() * leftTopPart/allPart;
+        }
+        if(_leftBottomCurrentNode){
+            currentData = currentData + _leftBottomCurrentNode->getInnerData() * leftBottomPart/allPart;
+        }
+        if(_rightTopCurrentNode){
+            currentData = currentData + _rightTopCurrentNode->getInnerData() * rightTopPart/allPart;
+        }
+        if(_rightBottomCurrentNode){
+            currentData = currentData + _rightBottomCurrentNode->getInnerData() * rightBottomPart/allPart;
+        }
     }
-
-
     WindDataNode *_leftTopWindNode,*_leftBottomWindNode,*_rightTopWindNode,*_rightBottomWindNode;
 
+    leftTopDis = INT_MAX,leftBottomDis = INT_MAX,rightTopDis = INT_MAX,rightBottomDis = INT_MAX;
     vector<WindDataNode> *cur_windVec = new vector<WindDataNode>;
 
     //travel all the wind node, get call the node in the mask and the four node which is the nearest to the
@@ -109,18 +118,21 @@ DataNode DataMap::getData(int x, int y)
         }
         if(pos_x<x&&pos_y<y && MVec2(x - pos_x,y - pos_y).length()<leftTopDis){
             _leftTopWindNode = &cur_windNode;
+            leftTopDis = MVec2(x - pos_x,y - pos_y).length();
         }
         if(pos_x<x&&pos_y>y && MVec2(x - pos_x,y - pos_y).length()<leftBottomDis){
             _leftBottomWindNode = &cur_windNode;
+            leftBottomDis = MVec2(x - pos_x,y - pos_y).length();
         }
         if(pos_x>x&&pos_y<y && MVec2(x - pos_x,y - pos_y).length()<rightTopDis){
             _rightTopWindNode = &cur_windNode;
+            rightTopDis = MVec2(x - pos_x,y - pos_y).length();
         }
         if(pos_x>x&&pos_y>y && MVec2(x - pos_x,y - pos_y).length()<rightBottomDis){
             _rightBottomWindNode = &cur_windNode;
+            rightBottomDis =  MVec2(x - pos_x,y - pos_y).length();
         }
     }
-
     MVec2 windData(0,0);
     if(cur_windVec->size() == 0){
         for(int i = 0;i<inner_windNodeVec.size();i++){
@@ -130,6 +142,7 @@ DataNode DataMap::getData(int x, int y)
         windData = windData / inner_windNodeVec.size();
     }
     else{
+        //calculate the orderless of wind in the four ivory  corner
         leftTopOrderless = calculateWindOrderless(top,y,left,x,cur_windVec);
         leftBottomOrderless = calculateWindOrderless(y,bottom,left,x,cur_windVec);
         rightTopOrderless = calculateWindOrderless(top,y,x,right,cur_windVec);
@@ -142,20 +155,26 @@ DataNode DataMap::getData(int x, int y)
         rightBottomPart = rightBottomDis * rightBottomOrderless;
 
         allPart = leftTopPart + leftBottomPart + rightTopPart + rightBottomPart;
-
         //systhesis the final current data in position(x,y)
-        windData =_leftTopWindNode->getInnerData() * leftTopPart/allPart +\
-                _leftBottomWindNode->getInnerData() * leftBottomPart/allPart + \
-                _rightTopWindNode->getInnerData() * rightTopPart/allPart + \
-                _rightBottomWindNode->getInnerData() * rightBottomPart/allPart;
-
+        if(_leftTopWindNode){
+            windData = windData + _leftTopWindNode->getInnerData() * leftTopPart/allPart;
+        }
+        if(_leftBottomWindNode){
+            windData = windData + _leftBottomWindNode->getInnerData() * leftBottomPart/allPart;
+        }
+        if(_rightTopWindNode){
+            windData = windData + _rightTopWindNode->getInnerData() * rightTopPart/allPart;
+        }
+        if(_rightBottomWindNode){
+            windData = windData + _rightBottomWindNode->getInnerData() * rightBottomPart/allPart;
+        }
     }
-
-    //calculate the orderless of wind in the four ivory  corner
 
     DataNode node(x,y);
     node.setInner_currentData(currentData);
     node.setInner_windData(windData);
+
+    delete cur_currentVec,cur_windVec,_leftTopCurrentNode,_leftBottomCurrentNode,_rightTopCurrentNode,_rightBottomCurrentNode,_leftTopWindNode,_leftBottomWindNode,_rightTopWindNode,_rightBottomWindNode;
     return node;
 }
 
@@ -177,10 +196,30 @@ void DataMap::setMaskSize(int width, int height)
  *
  * in this function, current data and wind data will be updated
  */
-void DataMap::updateData()
+//void DataMap::updateData()
+//{
+//    updateCurrentData();
+//    updateWindData();
+//}
+
+void DataMap::setCurrentSourceFileNameList(const QStringList &value)
 {
-    updateCurrentData();
-    updateWindData();
+    currentSourceFileNameList = value;
+}
+
+void DataMap::setWindSourceFileNameList(const QStringList &value)
+{
+    windSourceFileNameList = value;
+}
+
+QString DataMap::getSourcePath() const
+{
+    return sourcePath;
+}
+
+void DataMap::setSourcePath(const QString &value)
+{
+    sourcePath = value;
 }
 
 /*
@@ -188,9 +227,10 @@ void DataMap::updateData()
  *
  * input: it need to read a txt file, in this file there are all the current data but need to sort
  */
-void DataMap::updateCurrentData()
+void DataMap::updateCurrentData(QString fileName)
 {
-    QFile file("current_20140717.txt");
+    qDebug()<<fileName<<"read";
+    QFile file(fileName);
 
     if(!file.open(QFile::ReadOnly)){
         qDebug()<<"open file error!";
@@ -201,7 +241,6 @@ void DataMap::updateCurrentData()
         QString str(line);
         if(str.length() > 20){
             QStringList strList = str.split(' ');
-            qDebug()<<strList.at(1)<<" "<<strList.at(2);
             QString lat = strList.at(1);
             QString lon  = strList.at(2);
             Position pos = calculateellipse2plane(lat.toFloat(),lon.toFloat());
@@ -217,9 +256,9 @@ void DataMap::updateCurrentData()
  *
  * input: it need to read a txt file, in this file there are all the wind data but need to sort
  */
-void DataMap::updateWindData()
+void DataMap::updateWindData(QString fileName)
 {
-    QFile file("wind_20140308.txt");
+    QFile file(fileName);
 
     if(!file.open(QFile::ReadOnly)){
         qDebug()<<"open file error!";
@@ -230,7 +269,6 @@ void DataMap::updateWindData()
         QString str(line);
         if(str.length() > 20){
             QStringList strList = str.split(' ');
-            qDebug()<<strList.at(0)<<" "<<strList.at(1);
             QString lat = strList.at(0);
             QString lon  = strList.at(1);
             Position pos = calculateellipse2plane(lat.toFloat(),lon.toFloat());
@@ -247,6 +285,32 @@ void DataMap::updateWindData()
     }
 }
 
+void DataMap::updateTrigger(const QDate &date)
+{
+    QString latesStr;
+    for(int i = 0;i<windSourceFileNameList.size();i++){
+        QString windSourceName = windSourceFileNameList.at(i);
+        QDate curDate(windSourceName.mid(5,4).toInt(),windSourceName.mid(9,2).toInt(),windSourceName.mid(11,2).toInt());
+        if(curDate<=date){
+            latesStr = windSourceName;
+        }
+    }
+    if(latesStr != curUseWindFile){
+        updateWindData(latesStr);
+    }
+
+    for(int i = 0;i<currentSourceFileNameList.size();i++){
+        QString currentSourceName = currentSourceFileNameList.at(i);
+        QDate curDate(currentSourceName.mid(8,4).toInt(),currentSourceName.mid(12,2).toInt(),currentSourceName.mid(14,2).toInt());
+        if(curDate<=date){
+            latesStr = currentSourceName;
+        }
+    }
+    if(latesStr != curUseCurrentFile){
+        updateCurrentData(latesStr);
+    }
+}
+
 /*
  * brief: the function used to calculate the postion correspond to the latitude and longtitude
  *
@@ -254,73 +318,7 @@ void DataMap::updateWindData()
  *
  * output: it will return a struct(Position) of x and y in the descrate coordinate
  */
-Position DataMap::calculateellipse2plane(double B, double L)
-{
-    double l = 0, Lo = 0, a0 = 0, a3 = 0, a4 = 0, a5 = 0, a6 = 0, n = 0, c = 0;
-    double x = 0, y = 0;
-    double m = 0, p = 0, q = 0;
-    int N = 0, i = 0; //带号
 
-    N = int(dms2D(L) / 6);
-    Lo = 6 * N - 3;
-
-    l = (dms2D(L) - dms2D(Lo)) * 3600 / rho;  //单位为"
-    B = dms2Rad(B);
-    L = dms2Rad(L);
-    Lo = dms2Rad(Lo);
-
-    l = pow(l, 2);
-    c = pow(cos(B), 2);  //c=cos(B)的平方
-    n = 6399698.902 - (21562.267 - (108.973 - 0.612*c)*c)*c;
-    a0 = 32140.404 - (135.3302 - (0.7092 - 0.0040*c)*c)*c;
-    a3 = (0.3333333 + 0.001123*c)*c - 0.1666667;
-    a4 = (0.25 + 0.00252*c)*c - 0.04166;
-    a5 = 0.0083 - (0.1667 - (0.1968 + 0.004*c)*c)*c;
-    a6 = (0.166*c - 0.084)*c;
-    //计算平面坐标，并化为国家统一坐标
-    m = sin(B)*cos(B);
-    p = 1 + (a3 + a5*l)*l;
-    x = 6367558.4969*B - (a0 - (0.5 + (a4 + a6*l)*l)*l*n)*m;
-    y = (p)*sqrt(l)*n*cos(B);
-    y = y + 500000 + N * 1000000;
-    return Position(x/1000,y/1000);
-}
-
-double DataMap::dms2Rad(double Dms)
-{
-    double Degree, Miniute;
-    double Second;
-    int Sign;
-    double Rad;
-    if (Dms >= 0)
-        Sign = 1;
-    else
-        Sign = -1;
-    Dms = fabs(Dms);
-    Degree = floor(Dms);
-    Miniute = floor(fmod(Dms * 100.0, 100.0));
-    Second = fmod(Dms * 10000.0, 100.0);
-    Rad = Sign * (Degree + Miniute / 60.0 + Second / 3600.0) * M_PI / 180.0;
-    return Rad;
-}
-
-double DataMap::dms2D(double Dms)
-{
-    double Degree, Miniute;
-    double Second;
-    int Sign;
-    double D;
-    if (Dms >= 0)
-        Sign = 1;
-    else
-        Sign = -1;
-    Dms = fabs(Dms);
-    Degree = floor(Dms);
-    Miniute = floor(fmod(Dms * 100.0, 100.0));
-    Second = fmod(Dms * 10000.0, 100.0);
-    D = Sign * (Degree + Miniute / 60.0 + Second / 3600.0);
-    return D;
-}
 
 /*
  * brief: the function used for calculating the current orderless in the four corner
@@ -344,22 +342,24 @@ float DataMap::calculateCurrentOrderless(int top, int bottom, int left, int righ
     }
     if(count !=0){
         sumVec = sumVec / count;
-    }
-
-    float orderless = 0;
-    float sumLength = sumVec.length();
-    for(int i = 0;i<dataVec->size();i++){
-        CurrentDataNode node = dataVec->at(i);
-        int x = node.getInner_x();
-        int y = node.getInner_y();
-        if(x>left&&x<right&&y>top&&y<bottom){
-            MVec2 vecCur = node.getInnerData();
-            float crossDot = MVec2::dot(vecCur,sumVec);
-            orderless += acosf(crossDot /(vecCur.length()* sumLength));
+        float orderless = 0;
+        float sumLength = sumVec.length();
+        for(int i = 0;i<dataVec->size();i++){
+            CurrentDataNode node = dataVec->at(i);
+            int x = node.getInner_x();
+            int y = node.getInner_y();
+            if(x>left&&x<right&&y>top&&y<bottom){
+                MVec2 vecCur = node.getInnerData();
+                float crossDot = MVec2::dot(vecCur,sumVec);
+                orderless += acosf(crossDot /(vecCur.length()* sumLength));
+            }
         }
-    }
 
-    return orderless /= count;
+        return orderless /= count;
+    }
+    else{
+        return 0;
+    }
 }
 
 /*
@@ -384,22 +384,24 @@ float DataMap::calculateWindOrderless(int top, int bottom, int left, int right, 
     }
     if(count !=0){
         sumVec = sumVec / count;
-    }
-
-    float orderless = 0;
-    float sumLength = sumVec.length();
-    for(int i = 0;i<dataVec->size();i++){
-        WindDataNode node = dataVec->at(i);
-        int x = node.getInner_x();
-        int y = node.getInner_y();
-        if(x>left&&x<right&&y>top&&y<bottom){
-            MVec2 vecCur = node.getInnerData();
-            float crossDot = MVec2::dot(vecCur,sumVec);
-            orderless += acosf(crossDot /(vecCur.length()* sumLength));
+        float orderless = 0;
+        float sumLength = sumVec.length();
+        for(int i = 0;i<dataVec->size();i++){
+            WindDataNode node = dataVec->at(i);
+            int x = node.getInner_x();
+            int y = node.getInner_y();
+            if(x>left&&x<right&&y>top&&y<bottom){
+                MVec2 vecCur = node.getInnerData();
+                float crossDot = MVec2::dot(vecCur,sumVec);
+                orderless += acosf(crossDot /(vecCur.length()* sumLength));
+            }
         }
-    }
 
-    return orderless /= count;
+        return orderless /= count;
+    }
+    else{
+        return 0;
+    }
 }
 
 int DataNode::getInner_y() const

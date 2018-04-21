@@ -9,24 +9,13 @@
 #include <QFile>
 #include <QDebug>
 #include <QtMath>
+#include <QDate>
 
 #include <vector>
 
 #include <all_include.h>
 
-#define rho 206265
 using namespace std;
-//////////////////
-/// \brief The DataNode class
-//////////////////
-
-typedef struct Position{
-    float x;
-    float y;
-    Position(float _x,float _y):x(_x),y(_y){}
-}Position;
-
-
 //////////////////
 /// \brief The DataNode class
 //////////////////
@@ -91,34 +80,36 @@ class DataMap:public QObject
 public:
     DataMap();
 
-    DataNode getData(int x, int y);
-
     void setMaskSize(int width,int height);
 
-private slots:
-    void updateData();
+    QString getSourcePath() const;
+    void setSourcePath(const QString &value);
+
+    DataNode getData(const QDate &date, int x, int y);
+
+    void setWindSourceFileNameList(const QStringList &value);
+
+    void setCurrentSourceFileNameList(const QStringList &value);
 
 private:
-//    enum NodeType{
-//        CURRENT_TYPE,
-//        WIND_TYPE
-//    };
 
     vector<WindDataNode> inner_windNodeVec;
     vector<CurrentDataNode> inner_currentNodeVec;
     MVec2 *inner_standardWind;
     MVec2 *inner_standardCurrent;
-    QTimer inner_timer;
+    QString sourcePath;
+    QStringList windSourceFileNameList;
+    QStringList currentSourceFileNameList;
+    QString curUseWindFile;
+    QString curUseCurrentFile;
 
     int inner_maskWidth;
     int inner_maskHeight;
 
-    void updateCurrentData();
-    void updateWindData();
+    void updateCurrentData(QString fileName);
+    void updateWindData(QString fileName);
 
-    Position calculateellipse2plane(double B, double L);
-    double dms2Rad(double Dms);
-    double dms2D(double Dms);
+    void updateTrigger(const QDate &date);
 
     float calculateCurrentOrderless(int top, int bottom, int left, int right, vector<CurrentDataNode> *dataVec);
     float calculateWindOrderless(int top, int bottom, int left, int right, vector<WindDataNode> *dataVec);

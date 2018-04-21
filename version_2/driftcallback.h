@@ -7,11 +7,13 @@
 #include <osg/Matrix>
 
 #include <QDebug>
+#include <QString>
 
 class DriftCallback :public osg::NodeCallback{
 public:
-    DriftCallback(osgOcean::OceanScene * scene){
+    DriftCallback(osgOcean::OceanScene * scene,QString type){
         _scene = scene;
+        _type = type;
     }
     virtual void operator()(osg::Node* node, osg::NodeVisitor* nv){
         if(nv->getVisitorType() ==osg::NodeVisitor::UPDATE_VISITOR)
@@ -21,14 +23,17 @@ public:
                 osg::Matrix  matrix = osg::computeLocalToWorld(nv->getNodePath());
                 osg::Vec3d pos = matrix.getTrans();
 
-                float translate_offset = 10;
-
                 osg::Vec3f normal;
                 float height = _scene->getOceanSurfaceHeightAt(pos[0],pos[1],&normal);
 
-                qDebug()<<height;
-
-                mat->setMatrix(osg::Matrix::scale(0.005,0.005,0.005)*osg::Matrix::translate(pos[0],pos[1],height));
+                float scale;
+                if(_type == "driftor"){
+                    scale = 0.5;
+                }
+                else{
+                    scale = 0.005;
+                }
+                mat->setMatrix(osg::Matrix::scale(scale,scale,scale)*osg::Matrix::translate(pos[0],pos[1],height));
 
             }
         }
@@ -36,6 +41,7 @@ public:
 private:
     osgOcean::OceanScene * _scene;
 
+    QString _type;
 };
 
 #endif // DRIFTCALLBACK

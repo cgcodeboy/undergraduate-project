@@ -3,9 +3,25 @@
 
 #include <math.h>
 
+#define rho 206265
+
+#define M_PI 3.1415926
+
 ////////////////////
 /// \brief: this header is a user header, and it will inplement some user-defined struct
 ////////////////////
+
+typedef struct Position{
+    float x;
+    float y;
+    Position(float _x,float _y):x(_x),y(_y){}
+}Position;
+
+typedef struct LatLon{
+    float lat;
+    float lon;
+    LatLon(float _lat,float _lon):lat(_lat),lon(_lon){}
+}LatLon;
 
 // a struct for Vector include two
 class MVec2{
@@ -38,31 +54,6 @@ public:
         return MVec2(x / v,y /v);
     }
 
-//    inline MVec2 operator += (const MVec2 &vec) const{
-//        MVec2 _vec = const_cast<MVec2&>(vec);
-//        x += const_cast<float>(_vec.getX());
-//        y += const_cast<float>(_vec.getY());
-//        return *this;
-//    }
-
-//    inline MVec2 operator -= (const MVec2 &vec) const{
-//        x -= vec.getX();
-//        y -= vec.getY();
-//        return *this;
-//    }
-
-//    inline MVec2 operator *= (const float &v) const{
-//        x *= v;
-//        y *= v;
-//        return *this;
-//    }
-
-//    inline MVec2 operator /= (const float &v) const{
-//        x /= v;
-//        y /= v;
-//        return *this;
-//    }
-
     inline static float dot(const MVec2 &v1, const MVec2 &v2){
         return v1.getX() * v2.getX() + v1.getY() * v2.getY();
     }
@@ -75,10 +66,10 @@ public:
         return sqrtf(lengthSquare());
     }
     inline float getY() const{
-        return x;
+        return y;
     }
     inline float getX() const{
-        return y;
+        return x;
     }
 
     inline bool valid(){
@@ -133,10 +124,10 @@ public:
         return sqrtf(lengthSquare());
     }
     inline float getY() const{
-        return x;
+        return y;
     }
     inline float getX() const{
-        return y;
+        return x;
     }
     inline float getZ() const{
         return z;
@@ -151,5 +142,13 @@ public:
 
 };
 
+double dms2Rad(double Dms);
+
+double dms2D(double Dms);
+
+double D2Dms(double D);
+
+Position calculateellipse2plane(double B, double L);
+LatLon Calculateplane2ellipse(double x, double y);
 
 #endif // ALL_INCLUDE

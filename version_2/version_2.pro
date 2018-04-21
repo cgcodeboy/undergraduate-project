@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui opengl
-QT += webkit webkitwidgets
+QT += webkit webkitwidgets network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -23,7 +23,12 @@ SOURCES += main.cpp\
     dropcalculatecore.cpp \
     driftor.cpp \
     datapipe.cpp \
-    datamap.cpp
+    datamap.cpp \
+    download_widget.cpp \
+    analysis_widget.cpp \
+    all_include.cpp \
+    httpdownload.cpp \
+    possynthesis_widget.cpp
 
 HEADERS  += mainwindow.h \
     sim_catalog.h \
@@ -39,20 +44,28 @@ HEADERS  += mainwindow.h \
     driftor.h \
     datapipe.h \
     datamap.h \
-    followadaptor.h
+    followadaptor.h \
+    download_widget.h \
+    analysis_widget.h \
+    httpdownload.h \
+    possynthesis_widget.h
 
 FORMS    += mainwindow.ui \
-    sim_catalog.ui
+    sim_catalog.ui \
+    download_widget.ui \
+    analysis_widget.ui \
+    possynthesis_widget.ui
 
 RESOURCES += \
     picture.qrc
 
 CONFIG+=debug_and_release
-INCLUDEPATH += D:\osg\OpenSceneGraph-3.2.1-rc3\include
+INCLUDEPATH += D:\osg\OpenSceneGraph-3.2.1-rc3\include $$quote(D:\Program Files (x86)\netCDF 4.6.1\include) D:\boost\boost_1_66_0
 CONFIG(debug, debug|release) {
     LIBS+=-LD:\osg\OpenSceneGraph-3.2.1-rc3\lib -lOpenThreadsd -losgd -losgDBd -losgUtild -losgGAd -losgViewerd -losgTextd -losgOceanD -losgQtd
 } else {
     LIBS+=-LD:\osg\OpenSceneGraph-3.2.1-rc3\lib -lOpenThreads -losg -losgDB -losgUtil -losgGA -losgViewer -losgText -losgOcean -losgQt
+    LIBS+=-L$$quote(D:\Program Files (x86)\netCDF 4.6.1\lib) -lnetcdf
 }
 
 DISTFILES += \
