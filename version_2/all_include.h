@@ -2,6 +2,7 @@
 #define ALL_INCLUDE
 
 #include <math.h>
+#include <time.h>
 
 #define rho 206265
 

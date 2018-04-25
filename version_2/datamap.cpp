@@ -102,7 +102,7 @@ DataNode DataMap::getData(const QDate &date, int x, int y)
             currentData = currentData + _rightBottomCurrentNode->getInnerData() * rightBottomPart/allPart;
         }
     }
-    WindDataNode *_leftTopWindNode,*_leftBottomWindNode,*_rightTopWindNode,*_rightBottomWindNode;
+    WindDataNode *_leftTopWindNode= nullptr,*_leftBottomWindNode= nullptr,*_rightTopWindNode= nullptr,*_rightBottomWindNode= nullptr;
 
     leftTopDis = INT_MAX,leftBottomDis = INT_MAX,rightTopDis = INT_MAX,rightBottomDis = INT_MAX;
     vector<WindDataNode> *cur_windVec = new vector<WindDataNode>;
@@ -229,7 +229,6 @@ void DataMap::setSourcePath(const QString &value)
  */
 void DataMap::updateCurrentData(QString fileName)
 {
-    qDebug()<<fileName<<"read";
     QFile file(fileName);
 
     if(!file.open(QFile::ReadOnly)){
@@ -249,6 +248,7 @@ void DataMap::updateCurrentData(QString fileName)
             inner_currentNodeVec.push_back(node);
         }
     }
+    file.close();
 }
 
 /*
@@ -283,6 +283,7 @@ void DataMap::updateWindData(QString fileName)
             inner_windNodeVec.push_back(node);
         }
     }
+    file.close();
 }
 
 void DataMap::updateTrigger(const QDate &date)

@@ -90,29 +90,6 @@
        </layout>
       </widget>
      </item>
-     <item>
-      <widget class="QGroupBox" name="drop_GB_2">
-       <property name="title">
-        <string/>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
-         <widget class="QWidget" name="route_widght" native="true">
-          <property name="styleSheet">
-           <string notr="true">image: url(:/catalog/picture/earth.png);</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="route_BT">
-          <property name="text">
-           <string>飞行路径模拟</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
     </layout>
    </item>
   </layout>

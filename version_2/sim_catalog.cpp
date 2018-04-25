@@ -32,9 +32,3 @@ void Sim_catalog::on_drift_BT_clicked()
     emit driftClick();
     this->close();
 }
-
-void Sim_catalog::on_route_BT_clicked()
-{
-    emit routeClick();
-    this->close();
-}
