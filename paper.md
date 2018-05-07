@@ -513,27 +513,27 @@ M 该参数表示干燥空气的摩尔质量</br>
 **Algorithm:** Drop_Route</br>
 **Input:** Initial Position, Initial Speed, Airplane Weight, Wing Area, Ratio of Drag and Lift.</br>
 **Output:** The Vector of Key Point.</br>
-Drop_Route</br>
+>Drop_Route
 >1. Initialize a vector and append the Initial Position into the vector.
-2. Pos &larr; Initial Position, Speed &larr; Initial Speed.
-3. While Pos.z > 0 Do
-4. 　Generate Composition Forces F<sub>c</sub> using Speed, Airplane Weight, Wing Area, Ratio of Drag and Lift.
-5. 　Generate Accelerator a using F<sub>c</sub> and Weight
-6. 　Calculte Velocity v of next point using Speed and a, Speed &larr; v
-7. 　Calculate Position p of nect point using Pos and Speed, Pos &larr; p
-8. 　Append the Pos into Vector.
-9. End
-10. Return Vector</br>
+>2. Pos &larr; Initial Position, Speed &larr; Initial Speed.
+>3. While Pos.z > 0 Do
+>4. 　Generate Composition Forces F<sub>c</sub> using Speed, Airplane Weight, Wing Area, Ratio of Drag and Lift.
+>5. 　Generate Accelerator a using F<sub>c</sub> and Weight
+>6. 　Calculte Velocity v of next point using Speed and a, Speed &larr; v
+>7. 　Calculate Position p of nect point using Pos and Speed, Pos &larr; p
+>8. 　Append the Pos into Vector.
+>9. End
+>10. Return Vector</br>
 >
 >**Function:** Generate_Composition_Forces</br>
 **Input:** Position, Speed, Airplane Weight, Wing Area, Ratio of Drag and Lift.</br>
 **Output:** A Three Dimention Coordinates.</br>
-Generate_Composition_Forces</br>
+>Generate_Composition_Forces
 >1. Compute the Air Density &rho; using Position.z
-2. Compute the Drag Force F<sub>d</sub> using Speed, Wing Area, &rho; Drag Cofficient
-3. Compute the Lift Force F<sub>l</sub> using Speed, Wing Area, &rho; Drag Cofficient and Ratio of Drag and Lift
-4. Compute the Gravity F<sub>g</sub> using Weight
-5. Compute and return the Composition Force F<sub>f</sub> using F<sub>d</sub>, F<sub>l</sub>, F<sub>g</sub>
+>2. Compute the Drag Force F<sub>d</sub> using Speed, Wing Area, &rho; Drag Cofficient
+>3. Compute the Lift Force F<sub>l</sub> using Speed, Wing Area, &rho; Drag Cofficient and Ratio of Drag and Lift
+>4. Compute the Gravity F<sub>g</sub> using Weight
+>5. Compute and return the Composition Force F<sub>f</sub> using F<sub>d</sub>, F<sub>l</sub>, F<sub>g</sub>
 
 ### 4.3	残骸漂浮过程实现
 　　在本系统中共实现了两种轨迹漂移形式，即简单模拟和复杂模拟，简单模拟用于短时间、风速和流速变动不大的情况下，复杂模拟适用于长时间、风速和流速会因时间变化而发生变化的情况下。下面分别对着两种情形的实现进行说明。</br>
@@ -549,15 +549,15 @@ Generate_Composition_Forces</br>
 **Algorithm:** Simple_Drift_Route</br>
 **Input:** Wind Speed, Current Speed, Simulation Time,Leeway Rate.</br>
 **Output:** The Vector of Key Point.</br>
-Simple_Drift_Route</br>
+>Simple_Drift_Route
 >1. Initialize a vector and append the Initial Position into the vector.
-2. Synthesis Object Speed V using Wind Speed, Current Speed and Leeway Rate.
-3. Compute the step using Simulation Time.
-4. For i = 0, i < step. Do
-5. 　Compute a new Position p
-6. 　Append the p into the Vector
-7. End
-8. Return vector</br>
+>2. Synthesis Object Speed V using Wind Speed, Current Speed and Leeway Rate.
+>3. Compute the step using Simulation Time.
+>4. For i = 0, i < step. Do
+>5. 　Compute a new Position p
+>6. 　Append the p into the Vector
+>7. End
+>8. Return vector</br>
 
 　　在复杂模拟中不需要设置风速流速，所有的风速流速数据需要从数据文件中读取。但是其他的相关数据都需要填入。实现步骤如下：</br>
 　　1. 在外部控制模块的接口中填入相应数据，其中文件名、文件路径相关的接口通过FileDialog实现。文件名的显示通过TreeView实现。其余的数据接口使用LineEdit实现。</br>
