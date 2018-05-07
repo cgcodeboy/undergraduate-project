@@ -514,7 +514,7 @@ M 该参数表示干燥空气的摩尔质量</br>
 **Input:** Initial Position, Initial Speed, Airplane Weight, Wing Area, Ratio of Drag and Lift.</br>
 **Output:** The Vector of Key Point.</br>
 Drop_Route</br>
-1. Initialize a vector and append the Initial Position into the vector.
+>1. Initialize a vector and append the Initial Position into the vector.
 2. Pos &larr; Initial Position, Speed &larr; Initial Speed.
 3. While Pos.z > 0 Do
 4. 　Generate Composition Forces F<sub>c</sub> using Speed, Airplane Weight, Wing Area, Ratio of Drag and Lift.
@@ -529,7 +529,7 @@ Drop_Route</br>
 **Input:** Position, Speed, Airplane Weight, Wing Area, Ratio of Drag and Lift.</br>
 **Output:** A Three Dimention Coordinates.</br>
 Generate_Composition_Forces</br>
-1. Compute the Air Density &rho; using Position.z
+>1. Compute the Air Density &rho; using Position.z
 2. Compute the Drag Force F<sub>d</sub> using Speed, Wing Area, &rho; Drag Cofficient
 3. Compute the Lift Force F<sub>l</sub> using Speed, Wing Area, &rho; Drag Cofficient and Ratio of Drag and Lift
 4. Compute the Gravity F<sub>g</sub> using Weight
@@ -550,7 +550,7 @@ Generate_Composition_Forces</br>
 **Input:** Wind Speed, Current Speed, Simulation Time,Leeway Rate.</br>
 **Output:** The Vector of Key Point.</br>
 Simple_Drift_Route</br>
-1. Initialize a vector and append the Initial Position into the vector.
+>1. Initialize a vector and append the Initial Position into the vector.
 2. Synthesis Object Speed V using Wind Speed, Current Speed and Leeway Rate.
 3. Compute the step using Simulation Time.
 4. For i = 0, i < step. Do
