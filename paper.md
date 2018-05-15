@@ -13,7 +13,13 @@
 **关键词：MH370 飞行仿真 残骸漂移 Leeway OpenSceneGraph**
 
 ## <div align = "center">ABSTRACT</div>
+　　The frequently occurring of air disasters in recent years has caught  extensive attention. The missing MH370 in 2014-3-8 was especially serious. But 239 victims can't return to life now that disaster has happened. the most important is how to learn from the disasters. Among all the research methods used for air disasters, it has become a research hotspot to assist in the analysis of the wreckage of the plane. This paper will conduct the following research on the research methods of air crash accidents in this context to obtaine a complete and reliable simulation model of plane crash.</br>
+　　1. This paper establishes an overall simulation model through two stages. The first stage is based on the aircraft's last contact with the ground and then get the horizontal and longitudinal displacement of the aircraft by calculating the falling trajectory of the aircraft. In the second stage, wreckage drift simulation was carried out from the crash site, and the location of the wreckage was obtained after a certain time.</br>
+　　2. During the stage of falling, the paper calculates the resistance, lift from the Angle of air density, and then combines the gravity of the aircraft to carry out the mechanical analysis for obtaining the force of flight. Then the acceleration, speed and trajectory of the aircraft will be calculated  and  plane's final crash site can be obtained.</br>
+　　3. During the stage of wreckage drift, In this paper, the model of wreckage drift will be obtained which is improved by combining the probabilistic statistical model based on the international general Leeway model. The model will calculate the speed of wreckage drift at each update by using the wind and flow fields data that released by NASA's jet propulsion laboratory and synthesize an actual drift velocity with the support of the probabilistic model. Finally, the specific location of the wreckage is obtained according to the simulation time.</br>
+　　4. This paper will adopt the OpenSceneGraph open source 3d simulation engine and the Qt interface development framework to build an interface friendly ocean simulation environment and demonstrate the specific situation in real time of the above model aircraft in the falling stage and wreckage drift stage. Finally, the final latitude and longitude of the debris will be calculated by using gauss projection with the final location of the plane, the location of the crash site, and the final location of the wreckage.</br>
 
+**Keywords: MH370  Flight Simulation  Wreckage Drift  Leeway  OpenSceneGraph**
 
 
 ## <div align = "center">目录<div>
