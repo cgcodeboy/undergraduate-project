@@ -99,7 +99,7 @@
 
 　　给出本文使用的飞机坠落模型，解释其中所使用的计算算法，以及所使用的算法涉及到的相关理论原理。
 
-　　对最基本的Leeway模型进行研究，总结该模型在进行SAR时的方法。分析比较前人使用的几种基于Leeway模型的改进方法。提出本文所使用的模型。解释模型中所使用的算法涉及到的相关的理论原理。
+　　对最基本的Leeway模型进行研究，然后提出本文所使用的模型。解释模型中所使用的算法涉及到的相关的理论原理。
 
 　　对本文所需要实现的系统进行可行性分析及系统分析，介绍系统所使用的开发环境，然后对系统进行模块划分。接下来将对讨论系统的具体实现过程，并展示系统完成后的情况，最后将进行系统测试，使用具体的数据去测试系统的可靠性，并验证提出的模型的正确性。
 ### 1.4	论文结构
@@ -107,7 +107,7 @@
 
 　　第一章主要阐述研究背景，介绍总结国内外在本领域的研究现状，最后说明本文的研究内容。
 
-　　第二章将会介绍本文的研究所划分的两个基本模块所涉及到的基本原理和理论。对坠落模块将解释坠落轨迹的计算算法，并重点解释其中飞机受力所涉及到的空气密度与高度相关性的基本理论知识。对残骸轨迹预测模块，将会重点解释Leeway模型的基本原理，然后简要介绍前人在Leeway模型上进行改进后形成的预测方法并对比分析其中的优越性和不足之处。接下来将引入本文使用的基本模型的来源，并提出改进后的算法。
+　　第二章将会介绍本文的研究所划分的两个基本模块所涉及到的基本原理和理论。对坠落模块将解释坠落轨迹的计算算法，并重点解释其中飞机受力所涉及到的空气密度与高度相关性的基本理论知识。对残骸轨迹预测模块，将会重点解释Leeway模型的基本原理，然后引入本文使用的基本模型的来源，并提出改进后的算法。
 
 　　第三章将进入到系统涉及，首先会对本系统所使用的基本开发环境（三维引擎和界面框架）进行对比性的介绍，在此基础上进行系统的可行性分析，分析之余将进行系统的结构设计和模块划分，并着力解释各模块内部的设计。
 
@@ -244,11 +244,39 @@ M 该参数表示干燥空气的摩尔质量，值为0.289644 kg/mol 。</br>
 　　因此漂移物体在时间 K * 	&Delta;t 以后的位置可以表示为：
 >P(k) = p(0) +
 
-#### 2.2.3 基于leeway的轨迹预测研究
-　　leeway模型是一个经典模型，但是这种模型是最原始的，存在着很多不足之处，在对这种模型的不断深入研究中，发现了两个对leeway模型影响最大的方面，首先是物体的形状、大小的未知导致物体的受力并不是一样的，进一步就说明了leeway rate的不同。所以前人对这一方面做了不少的研究，有了一些新的进展。</br>
-　　(1)基于广泛实验的轨迹预测模型</br>
-　　这一模型是本文对Breivik等人的研究形成的模型的泛指。在这份提出该模型的报告中，作者们首先在阐释完leeway的基础上，介绍了leeway测量的两种方法，第一种是非直接法，另一种是非直接测量，这两种方法都各有利弊。在此不再继续阐述。</br>
-　　紧接着在这份报告中leeway实验对象被引入，报告表明在以往的25个实验中，有95种类型的实验对象被研究。其中包括40种救生筏的实验，14种小艇实验，10种渔船实验，另外还有一些PIW(person in water)、冲浪板、帆船，古巴木筏等等。
+#### 2.2.3 基于概率模型的Leeway模型
+　　在上文的基础上，可以很清楚的发现漂浮物的漂移速度是和风速和流速有关的。假设风速和流速是不相关的，那么就有
+>E[ U<sub>B</sub> ] = f * E[ U<sub>C</sub> ] + ( 1- f ) * E[ U<sub>W</sub> ]</br>
+Var[ U<sub>B</sub> ]  = f<sup>2</sup> * Var[ U<sub>C</sub> ]  + ( 1- f )<sup>2</sup> * Var[ U<sub>W</sub> ]
+
+　　所以漂移物的速度可以由风速和流速推导出，但是由于前文所述的动态模型会受到各类复杂的海洋环境影响，那么风速和流速的数据都是携带误差的，这些误差包含着随机性，因此轨迹预测需要以概率统计的方式进行。</br>
+　　在稳定的海洋环境中，海洋和大气环境都具有很强的空间相关性。所以在本文中，风场和流场都被假定的被描述为均匀随机场，也就是说两个位置的相关性只和他们的位置有关系。更进一步说就是风场和流场的平均值和方差都是定值而不和位置有关。Özgökmen提出的一种描述相关性的公式如下：</br>
+></br>
+其中X<sup>i</sup> 和 X<sup>j</sup> 是场中的两个点，则欧拉相关性可以描述为：</br>
+<br>
+一个大的 R 值代表着两个相邻的位置具有很高的空间相关性。
+
+　　在拥有风场、流场以及空间相关性矩阵以后就可以对漂移物的速度做最优估计了，令X</sub>t-1</sub> = [ X<sub>t-1</sub> <sup>1</sup> , X<sub>t-1</sub>  <sup>*</sup> ]<sup>T</sup> 为向量，X<sub>t-1</sub> <sup>1</sup> 为漂浮物的随机位置，X<sub>t-1</sub>  <sup>*</sup> = [X<sub>t-1</sub>  <sup>2</sup> , X<sub>t-1</sub>  <sup>3</sup> ... X<sub>t-1</sub>  <sup>p</sup>]<sup>T</sup> 是在t-1时刻围绕在平均值 X<sub>t-1</sub> <sup>1</sup> 周围的p-1个浮标的位置。必须注意的是 X<sub>t-1</sub>  <sup>*</sup> 中的每一个值代表的位置相关性必须足够大。因此 X<sub>t-1</sub> <sup>1</sup> 的最优估计可以如下表示：</br>
+>X<sub>t-1</sub> <sup>1</sup> ~ N( x<sub>t-1</sub> <sup>1</sup> ,  &sigma;<sub>t-1</sub> <sup>2</sup>)</br>
+x<sub>t-1</sub> <sup>1</sup> 表示X<sub>t-1</sub> <sup>1</sup> 的平均值，&sigma;<sub>t-1</sub> <sup>2</sup> 是标准方差。
+
+　　现在这个问题就可以看作从t-1到t更新漂浮物的位置。给出最优估计速度如下：<br>
+>U<sub>t-1</sub> <sup>B</sup> ~ N( u<sub>t-1</sub> <sup>B</sup> , )</br>
+其中U<sub>t-1</sub> <sup>B</sup>是物体的优化速度，u<sub>t-1</sub> <sup>B</sup> 是平均速度， 是漂浮物体在t-1时刻速度的方差。
+
+风速和流速都可以按如下公式表达：</br>
+>U<sub>t</sub> <sup>C</sup> ~ N( u<sub>t</sub> <sup>C</sup> , (&sigma;<sub>t</sub> <sup>C</sup>)<sup>2</sup>)</br>
+U<sub>t</sub> <sup>W</sup> ~ N( u<sub>t</sub> <sup>W</sup> , (&sigma;<sub>t</sub> <sup>W</sup>)<sup>2</sup>)
+
+　　浮物在时间t时候的速度可以被总结为：</br>
+>U<sub>t</sub> <sup>B</sup> ~ N( f * u<sub>t</sub> <sup>C</sup> + ( 1- f ) * u<sub>t</sub> <sup>W</sup> , f<sup>2</sup> * (&sigma;<sub>t</sub> <sup>C</sup>)<sup>2</sup> + ( 1- f )<sup>2</sup> * (&sigma;<sub>t</sub> <sup>W</sup>)<sup>2</sup>)
+
+　　由于在一个很短的时间里物体的速度可以看作一个常值，则动态模型也可以如下表达：</br>
+>X<sub>t</sub> <sup>1</sup> = X<sub>t-1</sub> <sup>1</sup> + U<sub>t-1</sub> <sup>B</sup> * &Delta;t
+
+　　因此漂浮物在时间t时候的位置最优估计可以按如下公式计算：</br>
+>E[ X<sub>t</sub> <sup>1</sup> ] = E[ X<sub>t-1</sub> <sup>1</sup> ] + E[ U<sub>t</sub> <sup>B</sup> ] * &Delta;t = x<sub>t-1</sub> <sup>1</sup>  + u<sub>t-1</sub> <sup>B</sup> * &Delta;t</br>
+Var[ X<sub>t</sub> <sup>1</sup> ] = Var[ X<sub>t-1</sub> <sup>1</sup> ] + Var[ U<sub>t-1</sub> <sup>B</sup> ] * * &Delta;t<sup>2</sup> = &sigma;<sub>t-1</sub> <sup>2</sup> +
 
 
 
@@ -632,6 +660,39 @@ M 该参数表示干燥空气的摩尔质量</br>
 　　5. 如果通过Button实现的地图显示接口点击后，将转化后的经纬度在百度地图上显示。</br>
 
 ### 4.5	系统展示
+　　由于本系统对整个仿真过程划分为三个步骤，所以以下将会按照大致的步骤顺序对系统进行展示。</br>
+　　首先选择仿真类型：</br>
+# <div align = "center">![choose](https://github.com/cgcodeboy/undergraduate-project/blob/master/resource/picture/choose.png)
+</div>
+
+　　当选择飞机坠落仿真后，填好数据，飞机在坠落过程时候的情况如下：</br>
+# <div align = "center">![drop_simple](https://github.com/cgcodeboy/undergraduate-project/blob/master/resource/picture/drop_simple.png)
+</div>
+
+　　当选择残骸漂移仿真后，选择简单模拟，填选相关参数，简单的浮标漂移情况如下：</br>
+# <div align = "center">![drift_easy](https://github.com/cgcodeboy/undergraduate-project/blob/master/resource/picture/drift_easy.png)
+</div>
+
+　　当选择复杂模拟，选择好数据文件，填好参数后，复杂的残骸轨迹漂移情况如下：</br>
+# <div align = "center">![drift_complex](https://github.com/cgcodeboy/undergraduate-project/blob/master/resource/picture/drift_complex.png)
+</div>
+
+　　下面是下载界面的展示：</br>
+# <div align = "center">![download](https://github.com/cgcodeboy/undergraduate-project/blob/master/resource/picture/download.png)
+</div>
+
+　　下面是文件分析界面的展示：</br>
+# <div align = "center">![analysis](https://github.com/cgcodeboy/undergraduate-project/blob/master/resource/picture/analysis.png)
+</div>
+
+　　下面是位置合成界面的展示：</br>
+# <div align = "center">![synthesis](https://github.com/cgcodeboy/undergraduate-project/blob/master/resource/picture/synthesis.png)
+</div>
+
+　　当位置合成完毕，点击地图显示，将会在百度地图中显示出来：</br>
+# <div align = "center">![mapView](https://github.com/cgcodeboy/undergraduate-project/blob/master/resource/picture/mapView.png)
+</div>
+
 ### 4.6	系统功能测试
 
 ## <div align = "center">第五章	结论与展望</div>
