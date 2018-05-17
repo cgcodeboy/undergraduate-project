@@ -720,7 +720,7 @@ M 该参数表示干燥空气的摩尔质量</br>
 </div>
 
 　　当位置合成完毕，点击地图显示，将会在百度地图中显示出来：</br>
-# <div align = "center">![mapView](https://github.com/cgcodeboy/undergraduate-project/blob/master/resource/picture/mapView.png)
+# <div align = "center">![mapView](https://github.com/cgcodeboy/undergraduate-project/blob/master/resource/picture/mapview.png)
 </div>
 
 ### 4.6	系统功能测试
