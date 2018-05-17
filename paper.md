@@ -358,6 +358,8 @@ Var[ X<sub>t</sub> <sup>1</sup> ] = Var[ X<sub>t-1</sub> <sup>1</sup> ] + Var[ U
 　8. **位置合成模块** 该模块也是独立模块，输入接口是控件中输入的参数，输出接口是相应的控件中显示出计算好的经纬度。</br>
 **总体结构**</br>
 　　下面是根据上述的结构设计和接口设计所得到的总体结构图，在图中可以看到本系统的总体结构划分，和个模块之间的数据沟通。在概要设计完成以后将会对系统各模块进行更加详细的设计，这些内容将在后面内容详细展开。
+# <div align = "center">![construct](https://github.com/cgcodeboy/undergraduate-project/blob/master/resource/picture/construct.png)
+</div>
 
 ### 3.4	飞机坠落过程结构设计
 　　飞机的坠落过程需要的模块主要包含以下几个模块：</br>
@@ -405,7 +407,9 @@ M 该参数表示干燥空气的摩尔质量</br>
 　　6. 计算新的位置的接口</br>
 　　7. 返回轨迹的接口</br>
 
-　　综合上述的参数和计算步骤可以将该模块综合形成一个类，下面为该类的类图以及该模块的数据流图：</br>
+　　综合上述的参数和计算步骤可以将该模块综合形成一个类，下面为该类的类图:</br>
+# <div align = "center">![drop_compute](https://github.com/cgcodeboy/undergraduate-project/blob/master/resource/picture/drop_compute.png)
+</div>
 
 #### 3.4.2 外部控制模块
 　　外部控制模块在最终将会以一个界面形式展示，所以在其中针对飞机坠落过程必然嵌入了一个核心模块用于显示飞机的坠落过程，其嵌入方式在设计阶段不再阐述，细节将在实现时详细论述。</br>
@@ -417,6 +421,8 @@ M 该参数表示干燥空气的摩尔质量</br>
 　　5. 飞机升阻比系数输入接口</br>
 
 　　这些输入接口针对的是用户，即用户通过这些接口输入详细参数。现在将外部控制模块形成一个类，则对应飞机坠落计算模块这些接口就是内部参数了。所以该类的类图如下：<br>
+# <div align = "center">![controller_drop](https://github.com/cgcodeboy/undergraduate-project/blob/master/resource/picture/controller_drop.png)
+</div>
 
 #### 3.4.3 核心模块
 　　核心模块是仿真显示最重要的模块，这个模块是将海洋环境展现出来的基础，这个模块将会嵌入到Qt界面中，直接以三维形式动态展现出来，因此这个模块中具有显示出这个海洋环境所需要的一切变量。另外由于这个模块需要根据外部控制模块提供的数据不断变化仿真的内容，所以需要有添加其他内容的接口。总结以上所有，归纳出这个模块的接口有如下：</br>
@@ -427,6 +433,12 @@ M 该参数表示干燥空气的摩尔质量</br>
 　　5. 添加漂流轨迹的接口</br>
 　　6. 其他接口 </br>
 　　这一节将核心模块设计完成，下一节的重合部分不再详细设计。将这些内部参数和接口整合为一个类，所以该类的类图如下：
+# <div align = "center">![core](https://github.com/cgcodeboy/undergraduate-project/blob/master/resource/picture/core.png)
+</div>
+
+　　这一过程的数据流图如下所示：</br>
+# <div align = "center">![drop_procedure](https://github.com/cgcodeboy/undergraduate-project/blob/master/resource/picture/drop_procedure.png)
+</div>
 
 
 ### 3.5	残骸漂浮过程结构设计
@@ -481,8 +493,15 @@ M 该参数表示干燥空气的摩尔质量</br>
 　　5. 更新风场、流场的数据接口</br>
 　　6. 其他接口</br>
 
-　　总结以上的变量和接口，可以将该模块设置为几个类，这些类的类图和数据流图如下：
+　　总结以上的变量和接口，可以将该模块设置为几个类，这些类的类图如下：
+# <div align = "center">![drift_compute](https://github.com/cgcodeboy/undergraduate-project/blob/master/resource/picture/drift_compute.png)
+</div>
 
+# <div align = "center">![pipe](https://github.com/cgcodeboy/undergraduate-project/blob/master/resource/picture/pipe.png)
+</div>
+
+# <div align = "center">![map](https://github.com/cgcodeboy/undergraduate-project/blob/master/resource/picture/map.png)
+</div>
 
 #### 3.5.2 外部控制模块
 　　上文已经对外部控制模块有了初步的介绍，本节接着从漂流轨迹过程的角度对该模块继续设计。</br>
@@ -497,6 +516,12 @@ M 该参数表示干燥空气的摩尔质量</br>
 　　8. 空间相关性系数输入接口</br>
 　　9. 初始时间输入接口</br>
 　　结合上一节已经完成部分的外部控制模块的接口，下面给出外部控制模块的类图如下：
+# <div align = "center">![controller_drift](https://github.com/cgcodeboy/undergraduate-project/blob/master/resource/picture/controller_drift.png)
+</div>
+
+　　这一过程的数据流图如下所示：</br>
+# <div align = "center">![drift_procedure](https://github.com/cgcodeboy/undergraduate-project/blob/master/resource/picture/drift_procedure.png)
+</div>
 
 ### 3.6	外围辅助系统设计
 　　外围辅助系统部分包括下载模块、分析模块、位置合成模块。下面对这三个模块进行详细设计。
@@ -508,6 +533,8 @@ M 该参数表示干燥空气的摩尔质量</br>
 　　3. 下载接口</br>
 
 　　给出下载模块的类图如下：
+# <div align = "center">![download_Model](https://github.com/cgcodeboy/undergraduate-project/blob/master/resource/picture/download_Model.png)
+</div>
 
 #### 3.6.2 分析模块
 　　分析模块提供给用户的是对CDF文件的分析服务，将内部的数据提取出，而不用用户自己去使用相应的SDK去解析。所以该模块需要提供的接口如下：</br>
@@ -516,6 +543,8 @@ M 该参数表示干燥空气的摩尔质量</br>
 　　3. 分析接口</br>　
 
 　　给出分析模块的类图如下：
+# <div align = "center">![analysis_Model](https://github.com/cgcodeboy/undergraduate-project/blob/master/resource/picture/analysis_Model.png)
+</div>
 
 #### 3.6.3 位置合成模块
 　　位置模块是为用户方便得到最终残骸位置服务的，根据飞机失事的初始位置，飞机坠落位移、漂流位移计算出飞机最终位置。所以该模块需要提供的接口如下：</br>
@@ -526,7 +555,8 @@ M 该参数表示干燥空气的摩尔质量</br>
 　　5. 百度地图显示接口</br>
 
 　　下面是位置合成模块的类图：
-
+# <div align = "center">![possynthesis](https://github.com/cgcodeboy/undergraduate-project/blob/master/resource/picture/possynthesis.png)
+</div>
 
 ## <div align = "center">第四章 系统实现<div>
 ### 4.1	仿真系统总体结构搭建
