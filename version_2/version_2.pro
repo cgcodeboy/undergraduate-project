@@ -9,7 +9,7 @@ QT += webkit webkitwidgets network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = version_2
+TARGET = FlightSilulation
 TEMPLATE = app
 
 
@@ -59,6 +59,8 @@ FORMS    += mainwindow.ui \
 RESOURCES += \
     picture.qrc
 
+RC_FILE += icon.rc
+
 CONFIG+=debug_and_release
 INCLUDEPATH += D:\osg\OpenSceneGraph-3.2.1-rc3\include $$quote(D:\Program Files (x86)\netCDF 4.6.1\include) D:\boost\boost_1_66_0
 CONFIG(debug, debug|release) {
@@ -69,5 +71,6 @@ CONFIG(debug, debug|release) {
 }
 
 DISTFILES += \
-    version_2.pro.user
+    version_2.pro.user \
+    icon.rc
 

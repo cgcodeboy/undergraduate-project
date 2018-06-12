@@ -30,6 +30,9 @@
  * osg header file
  */
 #include <osg/AnimationPath>
+#include <osgGA/TrackballManipulator>
+#include <osgGA/DriveManipulator>
+#include <osgGA/FlightManipulator>
 #include <osg/Vec2>
 #include <osg/Vec3>
 
@@ -44,8 +47,8 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
 
-    osg::ref_ptr<osg::AnimationPath> generateDriftAnimationPath(vector<osg::Vec2> path_Vec, int updateFrequcency, SCENE_TYPE type);
-    osg::ref_ptr<osg::AnimationPath> generateDropAnimationPath(vector<osg::Vec3> path_Vec);
+//    osg::ref_ptr<osg::AnimationPath> generateDriftAnimationPath(vector<osg::Vec2> path_Vec, int updateFrequcency, SCENE_TYPE type);
+//    osg::ref_ptr<osg::AnimationPath> generateDropAnimationPath(vector<osg::Vec3> path_Vec);
     ~MainWindow();
 
 private:
@@ -63,7 +66,6 @@ private slots:
     void on_currentDirection_DIAL_valueChanged(int value);
     void on_calculate_PB_clicked();
     void on_dropStart_BT_clicked();
-    void on_VR_BT_clicked();
     void on_dataPath_BT_clicked();
     void on_complexCalculate_BT_clicked();
     void on_actionDownload_triggered();
@@ -76,6 +78,8 @@ private slots:
     void on_actionPosition_S_triggered();
 
     void showLatLonSlot(float lat,float lon);
+    void on_actionTrackBall_triggered();
+    void on_actionFollow_triggered();
 };
 
 #endif // MAINWINDOW_H

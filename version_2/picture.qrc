@@ -9,5 +9,6 @@
     </qresource>
     <qresource prefix="/picture">
         <file>picture/down.png</file>
+        <file>picture/airplane.ico</file>
     </qresource>
 </RCC>

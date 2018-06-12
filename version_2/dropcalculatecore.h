@@ -27,18 +27,18 @@ public:
 
     void setInner_wingArea(float value);
 
-    void setInner_airplaneArea(float value);
-
     void setInner_Position(const MVec3 &value);
 
     vector<MVec3> getDropRoute();
+
+    void setInner_liftDragCofficient(float value);
 
 private:
     MVec3 inner_Position;
     MVec3 inner_flySpeed;
     int inner_weight;
     float inner_wingArea;
-    float inner_airplaneArea;
+    float inner_liftDragCofficient;
 
     //some const value used for calculating the force
     const float p_0 = 101.325;

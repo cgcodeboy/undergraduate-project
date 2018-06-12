@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>飞行坠毁于轨迹搜寻实验平台</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="picture.qrc">
+    <normaloff>:/picture/picture/airplane.ico</normaloff>:/picture/picture/airplane.ico</iconset>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout_12">
     <property name="leftMargin">
@@ -42,7 +46,7 @@
        <number>0</number>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="page">
        <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -147,12 +151,12 @@
                 <item>
                  <widget class="QLabel" name="label_14">
                   <property name="text">
-                   <string>飞机迎风面积：</string>
+                   <string>飞机机翼面积：</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLineEdit" name="allArea_LE"/>
+                 <widget class="QLineEdit" name="wingArea_LE"/>
                 </item>
                </layout>
               </item>
@@ -161,12 +165,12 @@
                 <item>
                  <widget class="QLabel" name="label_15">
                   <property name="text">
-                   <string>飞机机翼面积：</string>
+                   <string>升阻力系数比：</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLineEdit" name="wingArea_LE"/>
+                 <widget class="QLineEdit" name="liftDragCoefficient_LE"/>
                 </item>
                </layout>
               </item>
@@ -403,7 +407,7 @@
                   <item>
                    <widget class="QLabel" name="finalPosX_LB">
                     <property name="text">
-                     <string>   </string>
+                     <string/>
                     </property>
                    </widget>
                   </item>
@@ -421,7 +425,7 @@
                   <item>
                    <widget class="QLabel" name="finalPosY_LB">
                     <property name="text">
-                     <string>   </string>
+                     <string/>
                     </property>
                    </widget>
                   </item>
@@ -431,43 +435,6 @@
               </item>
              </layout>
             </widget>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout">
-             <item>
-              <spacer name="horizontalSpacer_8">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item>
-              <widget class="QPushButton" name="VR_BT">
-               <property name="text">
-                <string>VR展示</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <spacer name="horizontalSpacer_9">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
            </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_19">
@@ -611,7 +578,7 @@
               <enum>QTabWidget::Rounded</enum>
              </property>
              <property name="currentIndex">
-              <number>0</number>
+              <number>1</number>
              </property>
              <widget class="QWidget" name="tab">
               <attribute name="title">
@@ -1078,14 +1045,14 @@
                  <item>
                   <widget class="QLineEdit" name="posLat_LE">
                    <property name="text">
-                    <string>-20</string>
+                    <string>9.7245</string>
                    </property>
                   </widget>
                  </item>
                  <item>
                   <widget class="QLineEdit" name="posLon_LE">
                    <property name="text">
-                    <string>100</string>
+                    <string>94.4166</string>
                    </property>
                   </widget>
                  </item>
@@ -1337,6 +1304,8 @@
     <property name="title">
      <string>View</string>
     </property>
+    <addaction name="actionTrackBall"/>
+    <addaction name="actionFollow"/>
    </widget>
    <widget class="QMenu" name="menuData">
     <property name="title">
@@ -1372,6 +1341,16 @@
     <string>Position Synthesis</string>
    </property>
   </action>
+  <action name="actionTrackBall">
+   <property name="text">
+    <string>TrackBall</string>
+   </property>
+  </action>
+  <action name="actionFollow">
+   <property name="text">
+    <string>Follow(仅限于坠落)</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -1387,6 +1366,8 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="picture.qrc"/>
+ </resources>
  <connections/>
 </ui>

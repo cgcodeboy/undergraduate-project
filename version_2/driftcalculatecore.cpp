@@ -197,21 +197,20 @@ MVec2 DriftCalculateCore::synthesisWindSpeed(MVec2 wind_speed)
     for(unsigned int i = 0;i < inner_driftorVec.size();i++){
         Driftor& cur_driftor = inner_driftorVec.at(i);
         cur_driftor.setInner_windSpeed(MVec2(xVec[i] * inner_windDeviation * wind_speed.getX()+ wind_speed.getX(),yVec[i] * inner_windDeviation * wind_speed.getY() + wind_speed.getY()));
-        qDebug()<<cur_driftor.getInner_windSpeed().getX()<<" wind "<<cur_driftor.getInner_windSpeed().getY();
+//        qDebug()<<cur_driftor.getInner_windSpeed().getX()<<" wind "<<cur_driftor.getInner_windSpeed().getY();
     }
 
     MVec2 sum;
     int count = 0;
     for(unsigned int i = 0;i < inner_driftorVec.size();i++){
         float b_value = compute_B_correlation(i,WIND);
-        qDebug()<<"b"<<b_value;
         if(b_value>inner_spacialCorrelation){
             count++;
             Driftor cur_driftor = inner_driftorVec.at(i);
             sum = sum + cur_driftor.getInner_windSpeed();
         }
     }
-    qDebug()<<count<<" "<<wind_speed.getX()<<" "<<wind_speed.getY()<<" "<<sum.getX()<<" "<<sum.getY();
+//    qDebug()<<count<<" "<<wind_speed.getX()<<" "<<wind_speed.getY()<<" "<<sum.getX()<<" "<<sum.getY();
     return sum/count;
 }
 
@@ -244,21 +243,20 @@ MVec2 DriftCalculateCore::synthesisCurrentSpeed(MVec2 current_speed)
     for(unsigned int i = 0;i < inner_driftorVec.size();i++){
         Driftor& cur_driftor = inner_driftorVec.at(i);
         cur_driftor.setInner_currentSpeed(MVec2(xVec[i] * inner_currentDeviation * current_speed.getX()+ current_speed.getX(),yVec[i] * inner_currentDeviation * current_speed.getY()+ current_speed.getY()));
-        qDebug()<<cur_driftor.getInner_currentSpeed().getX()<<" current "<<cur_driftor.getInner_currentSpeed().getY();
+//        qDebug()<<cur_driftor.getInner_currentSpeed().getX()<<" current "<<cur_driftor.getInner_currentSpeed().getY();
     }
 
     MVec2 sum;
     int count = 0;
     for(unsigned int i = 0;i<inner_driftorVec.size();i++){
         float b_value = compute_B_correlation(i,CURRENT);
-        qDebug()<<"b"<<b_value;
         if(b_value>inner_spacialCorrelation){
             count++;
             Driftor cur_driftor = inner_driftorVec.at(i);
             sum = sum + cur_driftor.getInner_currentSpeed();
         }
     }
-    qDebug()<<count<<" "<<current_speed.getX()<<" "<<current_speed.getY()<<" "<<sum.getX()<<" "<<sum.getY();
+//    qDebug()<<count<<" "<<current_speed.getX()<<" "<<current_speed.getY()<<" "<<sum.getX()<<" "<<sum.getY();
     return sum/static_cast<float>(count);
 }
 
@@ -275,7 +273,7 @@ MVec2 DriftCalculateCore::synthesisObjectSpeed()
         return MVec2(object_SpeedX,object_SpeedY);
     }else{
         DataPair curPair = inner_dataPipe.getData(inner_beginDate,inner_coreDriftor.getInner_position().getX(),inner_coreDriftor.getInner_position().getY());
-        qDebug()<<"pair"<<curPair.getInner_windVec().getX()<<" "<<curPair.getInner_windVec().getY()<<" "<<curPair.getInner_currentVec().getX()<<" "<<curPair.getInner_currentVec().getY();
+        //qDebug()<<"pair"<<curPair.getInner_windVec().getX()<<" "<<curPair.getInner_windVec().getY()<<" "<<curPair.getInner_currentVec().getX()<<" "<<curPair.getInner_currentVec().getY();
         MVec2 sysWindSpeed = synthesisWindSpeed(curPair.getInner_windVec());
         MVec2 sysCurrentSpeed = synthesisCurrentSpeed(curPair.getInner_currentVec());
         float object_SpeedX = sysWindSpeed.getX()*(1-this->inner_leewayRate) + sysCurrentSpeed.getX()*this->inner_leewayRate;

@@ -58,6 +58,8 @@ public:
 
     osg::ref_ptr<osg::Geode> createRouteLine();
 
+    void setManipulator(osgGA::CameraManipulator *manipulator);
+
     void initScene();
 
     void addDropScene();
@@ -74,6 +76,9 @@ public:
     void addHUD(bool value);
 
     void addRouteLine(bool value);
+
+    SCENE_TYPE getInner_type() const;
+
 private:
     osg::ref_ptr<osgOcean::OceanScene> scene;
     osg::ref_ptr<osgOcean::FFTOceanSurface> surface;

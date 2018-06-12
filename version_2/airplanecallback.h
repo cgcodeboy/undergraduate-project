@@ -21,7 +21,7 @@ public:
 
                 float translate_offset = 10;
 
-                mat->setMatrix(osg::Matrix::scale(0.005,0.005,0.005)*osg::Matrix::translate(pos[0],pos[1]+translate_offset,100));
+                mat->setMatrix(osg::Matrix::scale(0.001,0.001,0.001)*osg::Matrix::translate(pos[0],pos[1]+translate_offset,100));
 
             }
         }

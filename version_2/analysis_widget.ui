@@ -30,7 +30,11 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QLineEdit" name="filePath_LE"/>
+      <widget class="QLineEdit" name="filePath_LE">
+       <property name="text">
+        <string>E:\my_program\undergraduate\netcdf\cdf\ascat\0308</string>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QToolButton" name="filePath_TB">
@@ -54,7 +58,11 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="storePath_LE"/>
+      <widget class="QLineEdit" name="storePath_LE">
+       <property name="text">
+        <string>E:\my_program\undergraduate\netcdf\cdf\ascat\0308</string>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QToolButton" name="storePath_TB">

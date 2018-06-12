@@ -5,8 +5,8 @@ DataMap::DataMap()
     inner_standardWind = new MVec2(rand()%10-5,rand()%10-5);
     inner_standardCurrent = new MVec2(rand()%10-5,rand()%10-5);
 
-    inner_maskHeight = 200000;
-    inner_maskWidth = 200000;
+    inner_maskHeight = 100000;
+    inner_maskWidth = 100000;
 }
 
 /*
@@ -45,7 +45,7 @@ DataNode DataMap::getData(const QDate &date, int x, int y)
         CurrentDataNode cur_currentNode = inner_currentNodeVec[i];
         float pos_x = cur_currentNode.getInner_x();
         float pos_y = cur_currentNode.getInner_y();
-        if(pos_x > left && pos_x < right && pos_y > top && pos_y < bottom){          
+        if(pos_x > left && pos_x < right && pos_y > top && pos_y < bottom){
             cur_currentVec->push_back(cur_currentNode);
         }
         if(pos_x<x&&pos_y<y && MVec2(x - pos_x,y - pos_y).length()<leftTopDis){
@@ -139,6 +139,7 @@ DataNode DataMap::getData(const QDate &date, int x, int y)
             WindDataNode cur_windNode = inner_windNodeVec[i];
             windData = windData + cur_windNode.getInnerData();
         }
+        //        qDebug()<<windData.getX()<<"wind before"<<windData.getY();
         windData = windData / inner_windNodeVec.size();
     }
     else{
@@ -154,22 +155,27 @@ DataNode DataMap::getData(const QDate &date, int x, int y)
         rightTopPart = rightTopDis * rightTopOrderless;
         rightBottomPart = rightBottomDis * rightBottomOrderless;
 
+        //        qDebug()<<leftTopPart<<" "<<leftBottomPart<<" "<<rightTopPart<<" "<<rightBottomPart;
+
         allPart = leftTopPart + leftBottomPart + rightTopPart + rightBottomPart;
         //systhesis the final current data in position(x,y)
         if(_leftTopWindNode){
+            //            qDebug()<<_leftTopWindNode->getInnerData().getX()<<_leftTopWindNode->getInnerData().getY()<<"hha";
             windData = windData + _leftTopWindNode->getInnerData() * leftTopPart/allPart;
         }
         if(_leftBottomWindNode){
+            //            qDebug()<<_leftBottomWindNode->getInnerData().getX()<<_leftBottomWindNode->getInnerData().getY()<<"hha";
             windData = windData + _leftBottomWindNode->getInnerData() * leftBottomPart/allPart;
         }
         if(_rightTopWindNode){
+            //            qDebug()<<_rightTopWindNode->getInnerData().getX()<<_rightTopWindNode->getInnerData().getY()<<"hha";
             windData = windData + _rightTopWindNode->getInnerData() * rightTopPart/allPart;
         }
         if(_rightBottomWindNode){
+            //            qDebug()<<_rightBottomWindNode->getInnerData().getX()<<_rightBottomWindNode->getInnerData().getY()<<"hha";
             windData = windData + _rightBottomWindNode->getInnerData() * rightBottomPart/allPart;
         }
     }
-
     DataNode node(x,y);
     node.setInner_currentData(currentData);
     node.setInner_windData(windData);
@@ -229,7 +235,7 @@ void DataMap::setSourcePath(const QString &value)
  */
 void DataMap::updateCurrentData(QString fileName)
 {
-    QFile file(fileName);
+    QFile file(sourcePath + "/" + fileName);
 
     if(!file.open(QFile::ReadOnly)){
         qDebug()<<"open file error!";
@@ -238,8 +244,11 @@ void DataMap::updateCurrentData(QString fileName)
     while(!file.atEnd()){
         QByteArray line =  file.readLine();
         QString str(line);
-        if(str.length() > 20){
-            QStringList strList = str.split(' ');
+        if(str.length()<20)
+            continue;
+        QStringList strList = str.split(' ');
+        QString condition = strList.at(4);
+        if(condition.right(3)!="IND"&&condition.right(3)!="NAN"){
             QString lat = strList.at(1);
             QString lon  = strList.at(2);
             Position pos = calculateellipse2plane(lat.toFloat(),lon.toFloat());
@@ -258,7 +267,7 @@ void DataMap::updateCurrentData(QString fileName)
  */
 void DataMap::updateWindData(QString fileName)
 {
-    QFile file(fileName);
+    QFile file(sourcePath + "/" + fileName);
 
     if(!file.open(QFile::ReadOnly)){
         qDebug()<<"open file error!";
@@ -267,8 +276,8 @@ void DataMap::updateWindData(QString fileName)
     while(!file.atEnd()){
         QByteArray line =  file.readLine();
         QString str(line);
-        if(str.length() > 20){
-            QStringList strList = str.split(' ');
+        QStringList strList = str.split(' ');
+        if(strList.at(3) != "nan"&&strList.at(2) != "nan"){
             QString lat = strList.at(0);
             QString lon  = strList.at(1);
             Position pos = calculateellipse2plane(lat.toFloat(),lon.toFloat());
@@ -276,8 +285,8 @@ void DataMap::updateWindData(QString fileName)
 
             float angle = strList.at(2).toFloat();
             float windSpeed = strList.at(3).toFloat();
-            float windDataHorizontal = cosf(angle) * windSpeed;
-            float windDataVertical = sinf(angle) * windSpeed;
+            float windDataHorizontal = cosf(90) * windSpeed;
+            float windDataVertical = sinf(90) * windSpeed;
 
             node.setInnerData(MVec2(windDataHorizontal,windDataVertical));
             inner_windNodeVec.push_back(node);
@@ -352,10 +361,11 @@ float DataMap::calculateCurrentOrderless(int top, int bottom, int left, int righ
             if(x>left&&x<right&&y>top&&y<bottom){
                 MVec2 vecCur = node.getInnerData();
                 float crossDot = MVec2::dot(vecCur,sumVec);
-                orderless += acosf(crossDot /(vecCur.length()* sumLength));
+                float t = crossDot /(vecCur.length()* sumLength);
+                if(t>0&&t<1)
+                    orderless += acosf(t);
             }
         }
-
         return orderless /= count;
     }
     else{
@@ -394,10 +404,11 @@ float DataMap::calculateWindOrderless(int top, int bottom, int left, int right, 
             if(x>left&&x<right&&y>top&&y<bottom){
                 MVec2 vecCur = node.getInnerData();
                 float crossDot = MVec2::dot(vecCur,sumVec);
-                orderless += acosf(crossDot /(vecCur.length()* sumLength));
+                float t = crossDot /(vecCur.length()* sumLength);
+                if(t>0&&t<1)
+                    orderless += acosf(t);
             }
         }
-
         return orderless /= count;
     }
     else{

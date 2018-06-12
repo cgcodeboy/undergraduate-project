@@ -115,6 +115,18 @@ osg::ref_ptr<osg::Geode> ViewWidget::createRouteLine()
     return NULL;
 }
 
+void ViewWidget::setManipulator(osgGA::CameraManipulator *manipulator)
+{
+    EventHandlers eventList = getEventHandlers();
+    for(EventHandlers::iterator it = eventList.begin();it!=eventList.end();it++){
+        if((*it)->getName() == "follow"){
+            this->removeEventHandler(*it);
+        }
+    }
+
+    this->setCameraManipulator(manipulator,true);
+}
+
 void ViewWidget::addRouteLine(bool value)
 {
     if(value){
@@ -267,7 +279,7 @@ void ViewWidget::addDropScene()
     osg::ref_ptr<osg::Node> airplane = osgDB::readNodeFile("resources/tian.obj");
     osg::ref_ptr<osg::MatrixTransform> airplaneMat = new osg::MatrixTransform;
     airplaneMat->setName("airplanemat");
-    airplaneMat->setMatrix(osg::Matrix::scale(0.005,0.005,0.005)*osg::Matrix::translate(0,0,100));
+    airplaneMat->setMatrix(osg::Matrix::scale(0.001,0.001,0.001)*osg::Matrix::translate(0,0,100));
     airplaneMat->setUpdateCallback(new AirplaneCallback(scene));
     airplaneMat->addChild(airplane);
     scene->addChild(airplaneMat);
@@ -289,7 +301,7 @@ void ViewWidget::addComplexDriftScene()
     {
         osg::ref_ptr<osg::MatrixTransform> driftMat = new osg::MatrixTransform;
         int x = qrand()%500,y = qrand()%500;
-        driftMat->setMatrix(osg::Matrix::scale(0.005,0.005,0.005)*osg::Matrix::translate(x,y,0));
+        driftMat->setMatrix(osg::Matrix::scale(0.001,0.001,0.001)*osg::Matrix::translate(x,y,0));
         osg::ref_ptr<osg::Node> driftPart = osgDB::readNodeFile(QString("resources/air/part_%1.obj").arg(i).toStdString());
         driftMat->addChild(driftPart);
         driftMat->setUpdateCallback(new DriftCallback(scene,"airplane"));
@@ -310,7 +322,7 @@ void ViewWidget::addSimpleDriftScene()
     osg::ref_ptr<osg::Group> driftorGroup = new osg::Group;
     driftorGroup->setName("driftor_group");
     osg::ref_ptr<osg::MatrixTransform> driftMat = new osg::MatrixTransform;
-    driftMat->setMatrix(osg::Matrix::scale(0.5,0.5,0.5)*osg::Matrix::translate(0,0,0));
+    driftMat->setMatrix(osg::Matrix::scale(0.2,0.2,0.2)*osg::Matrix::translate(0,0,0));
     osg::ref_ptr<osg::Node> driftPart = osgDB::readNodeFile("resources/driftor.3DS");
     driftMat->addChild(driftPart);
     driftMat->setUpdateCallback(new DriftCallback(scene,"driftor"));
@@ -413,6 +425,11 @@ void ViewWidget::setDropAnimationPath(osg::ref_ptr<osg::AnimationPath> path)
     }
 }
 
+SCENE_TYPE ViewWidget::getInner_type() const
+{
+    return inner_type;
+}
+
 osg::ref_ptr<osg::AnimationPath> ViewWidget::generateDriftAnimationPath(vector<osg::Vec2> path_Vec,osg::Vec3 start,int updateFrequcency,SCENE_TYPE type)
 {
     osg::ref_ptr<osg::AnimationPath> path = new osg::AnimationPath;
@@ -428,9 +445,9 @@ osg::ref_ptr<osg::AnimationPath> ViewWidget::generateDriftAnimationPath(vector<o
         osg::Vec3f pos(cur-initPos,0);
         osg::AnimationPath::ControlPoint *point = new osg::AnimationPath::ControlPoint;
         if(type == SIMPLEDRIFT){
-            point->setScale(osg::Vec3(0.5,0.5,0.5));
+            point->setScale(osg::Vec3(0.2,0.2,0.2));
         }else{
-            point->setScale(osg::Vec3(0.005,0.005,0.005));
+            point->setScale(osg::Vec3(0.001,0.001,0.001));
         }
         point->setPosition(start+pos);
         path->insert(i*updateFrequcency,*point);

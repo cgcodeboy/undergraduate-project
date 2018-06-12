@@ -40,10 +40,10 @@ void DropcalculateCore::setInner_wingArea(float value)
  *
  * output: it need to input a float value, which is the all area of the airplane
  */
-void DropcalculateCore::setInner_airplaneArea(float value)
-{
-    inner_airplaneArea = value;
-}
+//void DropcalculateCore::setInner_airplaneArea(float value)
+//{
+//    inner_airplaneArea = value;
+//}
 
 /*
  * brief: the setter of wind speed
@@ -68,12 +68,17 @@ vector<MVec3> DropcalculateCore::getDropRoute()
     MVec3 speed(inner_flySpeed);
     while(position.getZ()>0){
         MVec3 compositonForce = generateCompositionForces(speed,position.getZ());
-        MVec3 accelerator = generateAccelerator(compositonForce);       
-        speed = calculteVelocity(speed,accelerator);
+        MVec3 accelerator = generateAccelerator(compositonForce);
+        speed = calculteVelocity(speed,accelerator);    
         position = calculatePosition(speed,position);
         routeVec.push_back(position);
     }
     return routeVec;
+}
+
+void DropcalculateCore::setInner_liftDragCofficient(float value)
+{
+    inner_liftDragCofficient = value;
 }
 
 float DropcalculateCore::calculatePressure(float _height)
@@ -103,13 +108,13 @@ MVec3 DropcalculateCore::generateGravity()
 
 MVec3 DropcalculateCore::generateLift(const MVec3& _speed,float _height)
 {
-    return MVec3(0,0,0.5 * calcalateAirDensity(_height) * inner_wingArea * _speed.lengthSquare());
+    return MVec3(0,0,0.5 * inner_liftDragCofficient * 0.08 * calcalateAirDensity(_height) * inner_wingArea * _speed.lengthSquare());
 }
 
 MVec3 DropcalculateCore::generateCompositionForces(const MVec3& _speed,float _height)
 {
     MVec3 resistance = generateResistance(_speed,_height);
-    return MVec3(resistance.getX(),resistance.getY(),generateGravity().getZ() + generateLift(_speed,_height).getZ());
+    return MVec3(-resistance.getX(),-resistance.getY(),generateGravity().getZ() + generateLift(_speed,_height).getZ());
 }
 
 MVec3 DropcalculateCore::generateAccelerator(const MVec3 &_compositionForce)
@@ -129,9 +134,9 @@ MVec3 DropcalculateCore::calculatePosition(MVec3 _oldSpeed, MVec3 _oldPosition)
 
 MVec3 DropcalculateCore::generateResistance(const MVec3& _speed, float _height)
 {
-    float tt = 0.5 * 0.08 * calcalateAirDensity(_height);
-    float x = 0.5 * 0.08 * calcalateAirDensity(_height) * _speed.getX() * _speed.getX();
-    float y = 0.5 * 0.08 * calcalateAirDensity(_height) * _speed.getY() * _speed.getY();
+    float tt = 0.5 * 0.08 * calcalateAirDensity(_height) * inner_wingArea * _speed.lengthSquare();
+    float x = tt * _speed.getX() * _speed.getX();
+    float y = tt * _speed.getY() * _speed.getY();
     return MVec3(x,y,0);
 }
 

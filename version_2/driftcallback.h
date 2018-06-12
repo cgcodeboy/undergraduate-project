@@ -28,10 +28,10 @@ public:
 
                 float scale;
                 if(_type == "driftor"){
-                    scale = 0.5;
+                    scale = 0.2;
                 }
                 else{
-                    scale = 0.005;
+                    scale = 0.001;
                 }
                 mat->setMatrix(osg::Matrix::scale(scale,scale,scale)*osg::Matrix::translate(pos[0],pos[1],height));
 
